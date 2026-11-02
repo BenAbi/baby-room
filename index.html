@@ -352,7 +352,17 @@ function exampleItems(){return [
   mk({...find('Kallax 4×4')},96,311),
   mk({name:'Cuadro grande',w:140,d:3,h:90,color:'rose',kind:'wall'},0,140,90)
 ]}
-function seed(){return {room:{...ROOM0},active:'a',snap:5,layouts:[
+function cunaEscritorioItems(){return [
+  mk({...find('Escritorio')},0,0,90),
+  mk({...find('Silla de escritorio')},55,35),
+  mk({...find('Piscina de bolas 88×52')},223,15,90),
+  mk({...find('Cambiador IKEA SMÅSTAD')},0,150,90),
+  mk({...find('Alfombra 120×170')},85,120),
+  mk({...find('Cuna 60×120')},209,150),
+  mk({...find('Kallax 4×4')},96,311)
+]}
+const cunaEscritorio=()=>({id:'ce',name:'Cuna + Escritorio',items:cunaEscritorioItems()});
+function seed(){return {room:{...ROOM0},active:'ce',snap:5,seeds:['ce'],layouts:[cunaEscritorio(),
   {id:'a',name:'Actual',items:actualItems()},
   {id:'b',name:'Ejemplo con cuna',items:exampleItems()}
 ]}}
@@ -364,6 +374,10 @@ function load(){try{const s=JSON.parse(localStorage.getItem(STORE));if(s&&s.layo
   if(!(s.room.v>=3)){ // armario y radiador empotrados
     Object.assign(s.room,{radX:ROOM0.radX,radW:ROOM0.radW,radD:ROOM0.radD,wardD:ROOM0.wardD,wardDoor:ROOM0.wardDoor,colD:ROOM0.colD,col2D:ROOM0.col2D,v:3});
     s.layouts.forEach(l=>l.items.forEach(i=>{if(i.name==='Cama (actual)'&&i.y===62)i.y=10}));
+  }
+  if(!(s.seeds||[]).includes('ce')){ // distribución guardada por la familia
+    if(!s.layouts.some(l=>l.name==='Cuna + Escritorio'))s.layouts.unshift(cunaEscritorio());
+    s.seeds=[...(s.seeds||[]),'ce'];
   }
   return s}}catch(e){}return null}
 function save(){try{localStorage.setItem(STORE,JSON.stringify(S))}catch(e){}}
@@ -601,7 +615,7 @@ $('#importLayout').addEventListener('click',()=>{
   mutate(()=>{const l={id:'l'+uid(),name:String(d.name||'Importada'),items:d.items.map(i=>({...i,id:uid()}))};l.items.forEach(clampItem);S.layouts.push(l);S.active=l.id;selId=null});
   $('#shareMsg').textContent='Añadida como «'+cur().name+'».';$('#shareText').value='';
 });
-armed($('#reset'),'Restaurar plano inicial',()=>{mutate(()=>{const s=seed();S.room=s.room;S.layouts=s.layouts;S.active=s.active;selId=null});renderRoomForm()});
+armed($('#reset'),'Restaurar plano inicial',()=>{mutate(()=>{const s=seed();S.room=s.room;S.layouts=s.layouts;S.active=s.active;S.seeds=s.seeds;selId=null});renderRoomForm()});
 $('#roomform').addEventListener('change',e=>{const k=e.target.dataset.k;if(k){const v=parseFloat(e.target.value);if(isNaN(v)||v<0)return;mutate(()=>{S.room[k]=v;cur().items.forEach(clampItem)})}else if(e.target.id==='r-hinge')mutate(()=>{S.room.doorHinge=e.target.value})});
 $('#snap').addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;S.snap=+b.dataset.v;save();renderAll({keepInspector:1})});
 function undo(){const s=undoStack.pop();if(!s)return;S=JSON.parse(s);if(!selItem())selId=null;save();renderRoomForm();renderAll()}
