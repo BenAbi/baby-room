@@ -835,6 +835,20 @@ function model(it,lw,ld,R){
     for(let j=1;j<rows;j++)bx(g,lw-2*t,1.6,ld-1,c,0,j*kh/rows-.8,.5);
     return g;
   }
+  if(/silla/.test(n)){
+    // silla de oficina: base de 5 radios con ruedas, pistón, asiento, brazos y respaldo de malla
+    const c=C3.dark,grey=0x45484E,metal=0xA3A6AA,R0=Math.min(lw,ld)/2-3;
+    for(let i=0;i<5;i++){const a=i*Math.PI*2/5;spoke(g,R0,3,4.5,c,4,a);const m=new THREE.Mesh(new THREE.SphereGeometry(2.6,10,8),mat(0x1F2023));m.position.set(Math.cos(a)*R0,2.6,-Math.sin(a)*R0);g.add(m)}
+    cyl(g,5,5,5,c,0,4,0,16);cyl(g,2.2,2.2,30,metal,0,9,0,12);
+    bx(g,18,4,18,c,0,39,0);
+    bx(g,48,7,46,0x33363B,0,43,1);bx(g,44,2.5,42,grey,0,50,1.5);
+    for(const s of[-1,1]){bx(g,3,18,4,c,s*24.5,50,-4);bx(g,6,3,24,0x2A2C30,s*24.5,68,-2)}
+    bx(g,6,24,4,c,0,44,-23);
+    const back=new THREE.Group();back.position.set(0,64,-24);back.rotation.x=-.14;g.add(back);
+    bx(back,46,4,4,c,0,0,0);bx(back,46,4,4,c,0,50,0);bx(back,4,54,4,c,-21,0,0);bx(back,4,54,4,c,21,0,0);
+    bx(back,38,46,1,0x3A3D43,0,4,0);bx(back,30,7,2.5,grey,0,10,1);
+    return g;
+  }
   if(/escritorio|micke/.test(n)){
     const dh=it.h||75,c=C3.white,uw=Math.min(36,lw/3);
     bx(g,lw,3,ld,c,0,dh-3,0);
@@ -842,13 +856,6 @@ function model(it,lw,ld,R){
     bx(g,uw,dh-3,ld-2,c,lw/2-uw/2,0,-1);
     bx(g,uw-4,.6,.6,0x9a958e,lw/2-uw/2,dh-20,ld/2-1.6);bx(g,uw-4,.6,.6,0x9a958e,lw/2-uw/2,dh-42,ld/2-1.6);
     bx(g,lw-uw-2.5,35,1.5,c,-uw/2+1.25,dh-38,-ld/2+.75);
-    return g;
-  }
-  if(/silla/.test(n)){
-    const c=C3.dark;
-    for(let i=0;i<5;i++)spoke(g,27,3,4,c,3,i*Math.PI*2/5);
-    cyl(g,2.5,2.5,38,0x666666,0,6,0,10);cyl(g,23,23,7,c,0,44,0);
-    bx(g,42,48,5,0x3f4248,0,56,-ld/2+8);bx(g,4,4,14,c,0,50,-ld/2+12);
     return g;
   }
   if(/småstad|smastad|cambiador/.test(n)&&!/cómoda/.test(n)){
@@ -915,6 +922,10 @@ function build3d(){
     const along=side==='top'||side==='bottom',lw=along?f.w:f.d,ld=along?f.d:f.w;
     const m=model(it,lw,ld,R);
     m.rotation.y={top:0,bottom:Math.PI,left:Math.PI/2,right:-Math.PI/2}[side];
+    if(/silla/i.test(it.name)){ // la silla mira al escritorio más cercano
+      const desk=cur().items.filter(i=>/escritorio|micke/i.test(i.name)&&!/silla/i.test(i.name)).map(fp).sort((a,b)=>rdist(a,f)-rdist(b,f))[0];
+      if(desk&&rdist(desk,f)<120){const dx=Math.max(desk.x,Math.min(cx,desk.x+desk.w))-cx,dz=Math.max(desk.y,Math.min(cz,desk.y+desk.d))-cz;if(dx||dz)m.rotation.y=Math.atan2(dx,dz)}
+    }
     m.position.set(cx,0,cz);g.add(m);
   }
   if(!T3.framed){T3.framed=1;isoView()}else cutaway();
