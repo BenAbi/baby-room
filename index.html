@@ -262,6 +262,13 @@ details[open] summary{margin-bottom:10px}
     <ul class="warns" id="warns"></ul>
     <h2>En el plano</h2>
     <ul class="list" id="items"></ul>
+    <details id="shareDetails">
+      <summary>Copiar o pegar distribuciones</summary>
+      <p class="note">Sirve para pasar una distribución de un dispositivo a otro: copia el texto aquí y pégalo en el otro.</p>
+      <div class="field" style="margin-top:8px"><label for="shareText">Texto de la distribución</label><textarea id="shareText" rows="4" style="width:100%;border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:6px 8px;font-family:var(--mono);font-size:12px;resize:vertical"></textarea></div>
+      <div class="btnrow" style="margin-top:8px"><button class="btn" id="exportLayout" type="button">Copiar la actual</button><button class="btn primary" id="importLayout" type="button">Añadir la pegada</button></div>
+      <p class="note" id="shareMsg" style="margin-top:6px" aria-live="polite"></p>
+    </details>
     <details id="roomDetails">
       <summary>Medidas de la habitación</summary>
       <div class="roomform" id="roomform"></div>
@@ -581,6 +588,19 @@ $('#newLayout').addEventListener('click',()=>mutate(()=>{const c=JSON.parse(JSON
 $('#layoutName').addEventListener('change',e=>mutate(()=>{cur().name=e.target.value.trim()||cur().name}));
 function armed(btn,label,fn){btn.addEventListener('click',()=>{if(btn.classList.contains('armed')){btn.classList.remove('armed');btn.textContent=label;fn();return}btn.classList.add('armed');btn.textContent='¿Seguro? Pulsa otra vez';setTimeout(()=>{btn.classList.remove('armed');btn.textContent=label},3500)})}
 armed($('#delLayout'),'Borrar',()=>{if(S.layouts.length<2)return;mutate(()=>{S.layouts=S.layouts.filter(l=>l.id!==S.active);S.active=S.layouts[0].id;selId=null})});
+$('#exportLayout').addEventListener('click',()=>{
+  const l=cur(),txt=JSON.stringify({name:l.name,items:l.items.map(({id,...i})=>i)}),ta=$('#shareText');
+  ta.value=txt;
+  const ok=()=>{$('#shareMsg').textContent='Copiada. Pégala en el otro dispositivo o envíala.'};
+  const fallback=()=>{ta.focus();ta.select();$('#shareMsg').textContent='Texto seleccionado: cópialo con Ctrl+C (o mantén pulsado en el móvil).'};
+  try{navigator.clipboard.writeText(txt).then(ok,fallback)}catch(e){fallback()}
+});
+$('#importLayout').addEventListener('click',()=>{
+  let d;try{d=JSON.parse($('#shareText').value.trim())}catch(e){$('#shareMsg').textContent='No se reconoce el texto. Pega el texto completo que copiaste.';return}
+  if(!d||!Array.isArray(d.items)){$('#shareMsg').textContent='El texto no contiene una distribución.';return}
+  mutate(()=>{const l={id:'l'+uid(),name:String(d.name||'Importada'),items:d.items.map(i=>({...i,id:uid()}))};l.items.forEach(clampItem);S.layouts.push(l);S.active=l.id;selId=null});
+  $('#shareMsg').textContent='Añadida como «'+cur().name+'».';$('#shareText').value='';
+});
 armed($('#reset'),'Restaurar plano inicial',()=>{mutate(()=>{const s=seed();S.room=s.room;S.layouts=s.layouts;S.active=s.active;selId=null});renderRoomForm()});
 $('#roomform').addEventListener('change',e=>{const k=e.target.dataset.k;if(k){const v=parseFloat(e.target.value);if(isNaN(v)||v<0)return;mutate(()=>{S.room[k]=v;cur().items.forEach(clampItem)})}else if(e.target.id==='r-hinge')mutate(()=>{S.room.doorHinge=e.target.value})});
 $('#snap').addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;S.snap=+b.dataset.v;save();renderAll({keepInspector:1})});
