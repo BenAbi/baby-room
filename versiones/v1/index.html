@@ -1,0 +1,940 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#EDF0F3">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cuarto bebé">
+<style>body{margin:0}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px)}</style>
+<title>Cuarto de la bebé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: herramienta de tres columnas (catálogo · plano a escala · inspector) que se apila en móvil, plano primero */
+:root{
+  --bg:#EDF0F3; --panel:#FFFFFF; --ink:#1D2733; --muted:#5D6B7A; --line:#D5DCE3;
+  --accent:#B4486B; --accent-soft:#F7E3EA; --accent-ink:#FFFFFF;
+  --floor:#FBFCFD; --gmin:#EAEEF2; --gmaj:#D3DBE3; --wall:#3A4654; --fixed:#DDE3E9; --fixed-ink:#3A4654;
+  --glass:#9CC7E4; --swing:rgba(180,72,107,.07);
+  --err:#C93A3A; --warn:#B87A0E; --ok:#2F8A5B;
+  --i-rose:#F4C9D6; --i-sand:#EBD9B4; --i-sage:#CFE3CF; --i-sky:#CFE0F2; --i-lilac:#DDD3F0; --i-stone:#DEDDD7;
+  --i-stroke:#46515F;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --sans:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#12171D; --panel:#1A2129; --ink:#E6ECF2; --muted:#9AA8B6; --line:#2C3641;
+  --accent:#E78DAB; --accent-soft:#3A2630; --accent-ink:#1A1015;
+  --floor:#1D252E; --gmin:#242D37; --gmaj:#323E4A; --wall:#8E9BA9; --fixed:#2C3743; --fixed-ink:#C8D2DC;
+  --glass:#41708F; --swing:rgba(231,141,171,.08);
+  --err:#F06A6A; --warn:#E8B04A; --ok:#5CC48C;
+  --i-rose:#5C3442; --i-sand:#55482D; --i-sage:#33503A; --i-sky:#2E4461; --i-lilac:#45395F; --i-stone:#40434A;
+  --i-stroke:#C9D3DD; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#12171D; --panel:#1A2129; --ink:#E6ECF2; --muted:#9AA8B6; --line:#2C3641;
+  --accent:#E78DAB; --accent-soft:#3A2630; --accent-ink:#1A1015;
+  --floor:#1D252E; --gmin:#242D37; --gmaj:#323E4A; --wall:#8E9BA9; --fixed:#2C3743; --fixed-ink:#C8D2DC;
+  --glass:#41708F; --swing:rgba(231,141,171,.08);
+  --err:#F06A6A; --warn:#E8B04A; --ok:#5CC48C;
+  --i-rose:#5C3442; --i-sand:#55482D; --i-sage:#33503A; --i-sky:#2E4461; --i-lilac:#45395F; --i-stone:#40434A;
+  --i-stroke:#C9D3DD; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg); color:var(--ink); font-family:var(--sans); font-size:14px; line-height:1.45;
+  padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px)); padding-block:16px 32px}
+h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
+h1{font-size:24px; letter-spacing:-.01em}
+h2{font-size:13px; font-family:var(--sans); font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--muted)}
+button,input,select{font:inherit; color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+.top{display:flex; flex-wrap:wrap; gap:12px 24px; align-items:flex-end; justify-content:space-between; max-width:1500px; margin:0 auto 14px}
+.brand{display:flex; flex-direction:column; gap:2px}
+.brand .sub{color:var(--muted); font-family:var(--mono); font-size:12px}
+.layouts{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
+.chip{border:1px solid var(--line); background:var(--panel); border-radius:999px; padding:5px 12px; font-size:13px}
+.chip[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.ghost{border:1px dashed var(--line); background:transparent; border-radius:999px; padding:5px 12px; font-size:13px; color:var(--muted)}
+.ghost:hover{color:var(--ink); border-color:var(--muted)}
+
+.app{display:grid; gap:14px; max-width:1500px; margin:0 auto; grid-template-columns:250px minmax(0,1fr) 300px; align-items:start}
+.panel{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px; display:flex; flex-direction:column; gap:12px; min-width:0}
+.stage{display:flex; flex-direction:column; gap:10px; min-width:0}
+.toolbar{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.toolbar .spacer{flex:1}
+.btn{border:1px solid var(--line); background:var(--panel); border-radius:7px; padding:6px 11px; font-size:13px}
+.btn:hover{border-color:var(--muted)}
+.btn:disabled{opacity:.45; cursor:default}
+.btn.primary{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
+.btn.danger{color:var(--err)}
+.btn.danger.armed{background:var(--err); color:var(--panel); border-color:var(--err)}
+.seg{display:inline-flex; border:1px solid var(--line); border-radius:7px; overflow:hidden; background:var(--panel)}
+.seg button{border:0; background:transparent; padding:6px 10px; font-size:12px; font-family:var(--mono)}
+.seg button[aria-pressed="true"]{background:var(--ink); color:var(--bg)}
+.pill{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; padding:4px 10px; border-radius:999px; border:1px solid currentColor}
+.pill::before{content:""; width:7px; height:7px; border-radius:50%; background:currentColor}
+.pill.ok{color:var(--ok)} .pill.warn{color:var(--warn)} .pill.err{color:var(--err)}
+
+.planwrap{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:8px; display:flex; justify-content:center}
+#plan{width:100%; max-height:min(78vh, 900px); height:auto; touch-action:none; user-select:none; -webkit-user-select:none; display:block}
+.legend{display:flex; flex-wrap:wrap; gap:6px 16px; font-size:12px; color:var(--muted)}
+.legend span{display:inline-flex; align-items:center; gap:6px}
+.sw{width:14px; height:10px; border-radius:2px; display:inline-block; border:1px solid var(--line)}
+
+/* SVG */
+.wall{fill:var(--wall)} .floor{fill:var(--floor)} .gmin{fill:none; stroke:var(--gmin); stroke-width:.5} .gmaj{fill:none; stroke:var(--gmaj); stroke-width:.7}
+.glass{fill:var(--glass)} .glassl{stroke:var(--floor); stroke-width:1}
+.fixed{fill:var(--fixed); stroke:var(--fixed-ink); stroke-width:.8}
+.hatchl{stroke:var(--fixed-ink); stroke-width:1; opacity:.55}
+.zone{fill:var(--swing); stroke:var(--accent); stroke-width:.6; stroke-dasharray:3 3}
+.doorleaf{stroke:var(--ink); stroke-width:2.2}
+.doorarc{fill:var(--swing); stroke:var(--accent); stroke-width:.7; stroke-dasharray:3 3}
+.rad{fill:var(--panel); stroke:var(--fixed-ink); stroke-width:.7}
+.flbl{fill:var(--fixed-ink); font-family:var(--sans); font-weight:500}
+.mlbl{fill:var(--muted); font-family:var(--mono)}
+.mline{stroke:var(--muted); stroke-width:.6}
+.lamp{fill:none; stroke:var(--muted); stroke-width:.8}
+.item{cursor:grab}
+.item .body{stroke:var(--i-stroke); stroke-width:.8}
+.item.k-overlay .body{fill-opacity:.55; stroke-dasharray:4 2}
+.item.k-ceiling .body{fill-opacity:.25; stroke-dasharray:2 2}
+.item.st-warn .body{stroke:var(--warn); stroke-width:2}
+.item.st-err .body{stroke:var(--err); stroke-width:2.4}
+.item.sel .body{stroke:var(--accent); stroke-width:2.4}
+.item.sel.st-err .body{stroke:var(--err)}
+.lbl{fill:var(--ink); font-family:var(--sans); font-weight:600; pointer-events:none}
+.lbld{fill:var(--muted); font-family:var(--mono); pointer-events:none}
+.dim{stroke:var(--accent); stroke-width:.8}
+.dimt{fill:var(--accent); font-family:var(--mono); font-weight:500; paint-order:stroke; stroke:var(--floor); stroke-width:3px; pointer-events:none}
+.dragging .item{cursor:grabbing}
+
+/* paneles */
+.cat-group{display:flex; flex-direction:column; gap:4px}
+.cat-group h3{margin:0 0 2px; font-size:12px; color:var(--muted); font-weight:600}
+.add{display:flex; justify-content:space-between; align-items:baseline; gap:8px; width:100%; text-align:left; border:1px solid transparent; background:transparent; border-radius:7px; padding:6px 8px}
+.add:hover{background:var(--bg); border-color:var(--line)}
+.add .n{display:flex; align-items:center; gap:8px; min-width:0}
+.add .n::before{content:"+"; color:var(--accent); font-weight:700}
+.add .m{font-family:var(--mono); font-size:11px; color:var(--muted); white-space:nowrap}
+.field{display:flex; flex-direction:column; gap:3px; min-width:0}
+.field label{font-size:11px; color:var(--muted); font-weight:500}
+.field input,.field select{width:100%; border:1px solid var(--line); background:var(--bg); border-radius:6px; padding:6px 8px; font-variant-numeric:tabular-nums}
+.field input[type=number]{font-family:var(--mono)}
+.est{color:var(--warn); font-weight:600}
+.grid3{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px}
+.grid2{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px}
+.btnrow{display:flex; flex-wrap:wrap; gap:6px}
+.swatches{display:flex; gap:6px}
+.swatches button{width:24px; height:24px; border-radius:50%; border:2px solid transparent; padding:0}
+.swatches button[aria-pressed="true"]{border-color:var(--accent)}
+.hint{color:var(--muted); margin:0; font-size:13px}
+kbd{font-family:var(--mono); font-size:11px; border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; padding:0 4px; background:var(--bg)}
+.list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px}
+.list button{width:100%; display:flex; gap:8px; align-items:baseline; text-align:left; border:0; background:transparent; padding:5px 6px; border-radius:6px; font-size:13px}
+.list button:hover{background:var(--bg)}
+.list button[aria-current="true"]{background:var(--accent-soft)}
+.dot{width:8px; height:8px; border-radius:50%; flex:none; background:var(--ok); transform:translateY(-1px)}
+.dot.warn{background:var(--warn)} .dot.err{background:var(--err)} .dot.none{background:var(--line)}
+.list .m{margin-left:auto; font-family:var(--mono); font-size:11px; color:var(--muted); white-space:nowrap}
+.warns{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px}
+.warns li button{display:flex; gap:8px; align-items:baseline; text-align:left; width:100%; border:0; background:transparent; padding:0; font-size:13px}
+.warns .okmsg{color:var(--ok); font-size:13px}
+details summary{cursor:pointer; font-weight:600; font-size:13px}
+details[open] summary{margin-bottom:10px}
+.roomform{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px}
+.roomform .full{grid-column:1/-1}
+.note{font-size:12px; color:var(--muted); margin:0}
+.layoutname{display:flex; gap:6px; align-items:center}
+.layoutname input{border:1px solid var(--line); background:var(--panel); border-radius:6px; padding:5px 8px; width:180px}
+
+@media (max-width:1150px){
+  .app{grid-template-columns:minmax(0,1fr) 300px}
+  .catalog{grid-column:1/-1; order:3}
+  .catalog .cats{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:12px}
+}
+@media (max-width:760px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .inspector{order:2}
+  .layoutname input{width:140px}
+}
+@media (prefers-reduced-motion:no-preference){ .btn,.chip,.add{transition:background .15s, border-color .15s} }
+
+/* vista 3D */
+.wrap3d{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:8px; display:flex; flex-direction:column; gap:8px}
+#canvas3d{height:min(72vh,820px); min-height:340px; touch-action:none; position:relative}
+#canvas3d canvas{display:block; width:100%; height:100%}
+.bar3d{display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between}
+
+/* móvil: barra de acciones fija abajo y catálogo como hoja deslizable */
+.mbar,.scrim,.sheetclose{display:none}
+.sheethead{display:flex; align-items:center; justify-content:space-between; gap:8px}
+@media (max-width:760px){
+  body{padding-bottom:calc(140px + env(safe-area-inset-bottom,0px))}
+  h1{font-size:21px}
+  .top{margin-bottom:10px}
+  .top .layouts{min-width:0; max-width:100%; flex-wrap:nowrap}
+  #chips{flex-wrap:nowrap; overflow-x:auto; min-width:0; scrollbar-width:none}
+  .chip,.ghost{white-space:nowrap}
+  .field input,.field select,.layoutname input{font-size:16px}
+  .toolbar #undo,.toolbar .spacer,.toolbar .snaplbl{display:none}
+  .planwrap{padding:4px}
+  .legend{font-size:11px}
+  .mbar{display:flex; flex-direction:column; gap:8px; position:fixed; left:0; right:0; bottom:0; z-index:20;
+    background:var(--panel); border-top:1px solid var(--line); box-shadow:0 -8px 24px rgba(0,0,0,.10);
+    padding-top:10px; padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));
+    padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px))}
+  .mrow{display:flex; align-items:center; gap:6px; min-width:0}
+  .mrow .grow{flex:1}
+  .mrow .btn{min-height:42px; padding:6px 10px}
+  .mname{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:15px}
+  .mrow .m{font-family:var(--mono); font-size:12px; color:var(--muted)}
+  .nudge{display:flex; border:1px solid var(--line); border-radius:7px; overflow:hidden}
+  .nudge button{width:36px; height:42px; border:0; border-right:1px solid var(--line); background:var(--panel); font-size:13px}
+  .nudge button:last-child{border-right:0}
+  .nudge button:active,.mrow .btn:active{background:var(--bg)}
+  .catalog{position:fixed; left:0; right:0; bottom:0; z-index:30; max-height:78vh; overflow:auto; border-radius:14px 14px 0 0;
+    padding-bottom:calc(16px + env(safe-area-inset-bottom,0px)); padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px));
+    transform:translateY(105%); visibility:hidden; box-shadow:0 -10px 30px rgba(0,0,0,.18)}
+  body.sheet .catalog{transform:none; visibility:visible}
+  body.sheet .scrim{display:block; position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:25}
+  .sheetclose{display:inline-flex}
+  .add{padding:10px 8px}
+}
+@media (max-width:760px) and (prefers-reduced-motion:no-preference){ .catalog{transition:transform .22s ease, visibility .22s} }
+</style>
+
+<header class="top">
+  <div class="brand">
+    <h1>Cuarto de la bebé</h1>
+    <span class="sub" id="roomsub">Plano a escala · medidas en cm</span>
+  </div>
+  <div class="layouts">
+    <div id="chips" class="layouts"></div>
+    <button class="ghost" id="newLayout" title="Crea una copia de la distribución actual">+ Copiar distribución</button>
+  </div>
+</header>
+
+<main class="app">
+  <aside class="panel catalog" id="catalogPanel">
+    <div class="sheethead"><h2>Añadir mueble</h2><button class="btn sheetclose" id="closeSheet" type="button">Cerrar</button></div>
+    <div class="cats" id="catalog"></div>
+    <details>
+      <summary>Mueble a medida</summary>
+      <form id="customForm" style="display:flex;flex-direction:column;gap:8px">
+        <div class="field"><label for="c-name">Nombre</label><input id="c-name" required placeholder="p. ej. Cómoda de la abuela"></div>
+        <div class="grid3">
+          <div class="field"><label for="c-w">Ancho</label><input id="c-w" type="number" min="1" value="80" required></div>
+          <div class="field"><label for="c-d">Fondo</label><input id="c-d" type="number" min="1" value="45" required></div>
+          <div class="field"><label for="c-h">Alto</label><input id="c-h" type="number" min="0" value="90"></div>
+        </div>
+        <button class="btn primary" type="submit">Añadir al plano</button>
+      </form>
+    </details>
+  </aside>
+
+  <section class="stage">
+    <div class="toolbar">
+      <div class="seg" id="viewSeg" role="group" aria-label="Vista"><button data-view="2d" aria-pressed="true">Plano</button><button data-view="3d" aria-pressed="false">3D</button></div>
+      <div class="layoutname"><label for="layoutName" class="note">Distribución</label><input id="layoutName"></div>
+      <button class="btn danger" id="delLayout">Borrar</button>
+      <span class="spacer"></span>
+      <span class="note snaplbl">Ajuste</span>
+      <div class="seg" id="snap">
+        <button data-v="1">1 cm</button><button data-v="5">5 cm</button><button data-v="10">10 cm</button>
+      </div>
+      <button class="btn" id="undo" title="Deshacer (Ctrl+Z)">Deshacer</button>
+      <span id="status" class="pill ok">Sin conflictos</span>
+    </div>
+    <div class="wrap3d" id="wrap3d" hidden>
+      <div id="canvas3d"></div>
+      <div class="bar3d"><span class="note" id="msg3d"></span><button class="btn" id="rot3d" type="button">Girar vista 90°</button></div>
+    </div>
+    <div class="planwrap"><svg id="plan" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Plano de la habitación visto desde arriba"></svg></div>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--glass)"></i>Ventana</span>
+      <span><i class="sw" style="background:var(--fixed)"></i>Armario y columna</span>
+      <span><i class="sw" style="background:var(--swing);border:1px dashed var(--accent)"></i>Apertura de puertas</span>
+      <span><i class="sw" style="border:2px solid var(--err)"></i>Choque</span>
+      <span><i class="sw" style="border:2px solid var(--warn)"></i>Aviso</span>
+      <span>Cuadrícula: 10 cm · líneas fuertes cada 50 cm</span>
+    </div>
+  </section>
+
+  <aside class="panel inspector">
+    <h2>Seleccionado</h2>
+    <div id="sel"></div>
+    <h2>Avisos</h2>
+    <ul class="warns" id="warns"></ul>
+    <h2>En el plano</h2>
+    <ul class="list" id="items"></ul>
+    <details id="shareDetails">
+      <summary>Copiar o pegar distribuciones</summary>
+      <p class="note">Sirve para pasar una distribución de un dispositivo a otro: copia el texto aquí y pégalo en el otro.</p>
+      <div class="field" style="margin-top:8px"><label for="shareText">Texto de la distribución</label><textarea id="shareText" rows="4" style="width:100%;border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:6px 8px;font-family:var(--mono);font-size:12px;resize:vertical"></textarea></div>
+      <div class="btnrow" style="margin-top:8px"><button class="btn" id="exportLayout" type="button">Copiar la actual</button><button class="btn primary" id="importLayout" type="button">Añadir la pegada</button></div>
+      <p class="note" id="shareMsg" style="margin-top:6px" aria-live="polite"></p>
+    </details>
+    <details id="roomDetails">
+      <summary>Medidas de la habitación</summary>
+      <div class="roomform" id="roomform"></div>
+      <p class="note" style="margin-top:8px"><span class="est">≈</span> estimado a partir de las fotos. Mídelo y corrígelo aquí.</p>
+      <div class="btnrow" style="margin-top:8px"><button class="btn danger" id="reset">Restaurar plano inicial</button></div>
+    </details>
+  </aside>
+</main>
+<div class="scrim" id="scrim"></div>
+<nav class="mbar" id="mbar" aria-label="Acciones del plano"></nav>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const svg=$('#plan');
+const STORE='cuarto-bebe-v1';
+const T=12; // grosor de pared dibujado
+
+const ROOM0={W:275,L:350,winX:6,winW:106,radX:11.5,radW:95,radD:15,wardW:125,wardD:50,wardDoor:50,colW:32,colD:10,col2W:28,col2D:10,doorX:5,doorW:76,doorHinge:'left',H:250,winSill:90,winH:120,v:3};
+const ROOM_FIELDS=[
+  ['W','Ancho (pared de la ventana)'],['L','Largo (paredes laterales)'],
+  ['winX','Ventana: desde la pared del escritorio'],['winW','Ventana: ancho con marco'],
+  ['radX','Radiador: desde la pared del escritorio',1],['radW','Radiador: largo'],['radD','Radiador: fondo del hueco (en la pared)'],
+  ['wardW','Armario: ancho con marco'],['wardD','Armario: fondo (empotrado en la pared)'],['wardDoor','Armario: ancho de cada puerta'],
+  ['colW','Columna armario: ancho'],['colD','Columna armario: sobresale',1],
+  ['col2W','Columna junto al Kallax: ancho'],['col2D','Columna junto al Kallax: sobresale'],
+  ['doorX','Puerta: hoja desde la pared del escritorio',1],['doorW','Puerta: ancho de la hoja (marco 86)',1],
+  ['H','Altura del techo',1],['winSill','Ventana: altura del alféizar',1],['winH','Ventana: alto',1]
+];
+const COLORS=['rose','sand','sage','sky','lilac','stone'];
+const KINDS={floor:'Ocupa suelo',overlay:'Alfombra (no choca)',wall:'Colgado en la pared',ceiling:'En el techo'};
+
+const CATALOG=[
+  {group:'Bebé',items:[
+    {name:'Cuna 60×120',w:66,d:126,h:90,color:'rose',baby:1},
+    {name:'Cuna convertible 70×140',w:76,d:146,h:90,color:'rose',baby:1},
+    {name:'Minicuna / colecho',w:55,d:95,h:80,color:'rose',baby:1},
+    {name:'Cómoda cambiador',w:80,d:50,h:95,color:'sand'},
+    {name:'Cambiador IKEA SMÅSTAD',w:90,d:79,h:100,color:'sand'},
+    {name:'Sillón de lactancia',w:75,d:80,h:100,color:'sage'},
+    {name:'Parque de juegos',w:100,d:100,h:70,color:'sky'},
+    {name:'Baúl de juguetes',w:60,d:40,h:45,color:'lilac'},
+    {name:'Piscina de bolas 88×52',w:88,d:52,h:30,color:'stone'}
+  ]},
+  {group:'Dormitorio',items:[
+    {name:'Cama 90×190',w:97,d:200,h:45,color:'sky'},
+    {name:'Cama 105×190',w:112,d:200,h:45,color:'sky'},
+    {name:'Sofá cama ÄLVDALEN abierto',w:133,d:188,h:42,color:'lilac'},
+    {name:'Sofá cama ÄLVDALEN cerrado ≈',w:188,d:95,h:75,color:'lilac'},
+    {name:'Mesita de noche',w:40,d:35,h:50,color:'sand'},
+    {name:'Cómoda',w:80,d:48,h:80,color:'sand'},
+    {name:'Kallax 4×4',w:149,d:39,h:147,color:'sand'},
+    {name:'Kallax 2×4',w:77,d:39,h:147,color:'sand'},
+    {name:'Escritorio MICKE',w:105,d:50,h:75,color:'stone'},
+    {name:'Silla de escritorio',w:60,d:60,h:110,color:'stone',shape:'round'}
+  ]},
+  {group:'Otros',items:[
+    {name:'Ventilador de pie',w:40,d:40,h:120,color:'sky',shape:'round'},
+    {name:'Ventilador de techo',w:107,d:107,h:0,color:'sky',shape:'round',kind:'ceiling'},
+    {name:'Alfombra 120×170',w:120,d:170,h:1,color:'lilac',kind:'overlay'},
+    {name:'Cuadro',w:100,d:3,h:70,color:'rose',kind:'wall'},
+    {name:'Lámpara de pie',w:35,d:35,h:160,color:'stone',shape:'round'}
+  ]}
+];
+
+let uidN=Date.now()%100000;
+const uid=()=>'i'+(uidN++).toString(36);
+function mk(spec,x,y,rot){return {id:uid(),name:spec.name,w:spec.w,d:spec.d,h:spec.h||0,x,y,rot:rot||0,color:spec.color||'stone',kind:spec.kind||'floor',shape:spec.shape||'rect',baby:!!spec.baby}}
+const find=n=>{for(const g of CATALOG)for(const i of g.items)if(i.name===n)return i};
+
+function actualItems(){return [
+  mk({...find('Escritorio MICKE')},0,2,90),
+  mk({...find('Silla de escritorio')},58,30),
+  mk({...find('Cama 90×190'),name:'Cama (actual)',w:92,d:195},183,10),
+  mk({...find('Kallax 4×4')},96,311),
+  mk({name:'Cuadro grande',w:140,d:3,h:90,color:'rose',kind:'wall'},0,140,90)
+]}
+function exampleItems(){return [
+  mk({...find('Cómoda cambiador')},0,2,90),
+  mk({...find('Cuna 60×120')},0,100),
+  mk({...find('Cama 90×190'),name:'Cama (actual)',w:92,d:195},183,10),
+  mk({...find('Kallax 4×4')},96,311),
+  mk({name:'Cuadro grande',w:140,d:3,h:90,color:'rose',kind:'wall'},0,140,90)
+]}
+function cunaEscritorioItems(){return [
+  mk({...find('Escritorio MICKE')},0,0,90),
+  mk({...find('Silla de escritorio')},55,35),
+  mk({...find('Piscina de bolas 88×52')},223,15,90),
+  mk({...find('Cambiador IKEA SMÅSTAD')},0,150,90),
+  mk({...find('Alfombra 120×170')},85,120),
+  mk({...find('Cuna 60×120')},209,150),
+  mk({...find('Kallax 4×4')},96,311)
+]}
+const cunaEscritorio=()=>({id:'ce',name:'Cuna + Escritorio',items:cunaEscritorioItems()});
+function seed(){return {room:{...ROOM0},active:'ce',snap:5,seeds:['ce'],layouts:[cunaEscritorio(),
+  {id:'a',name:'Actual',items:actualItems()},
+  {id:'b',name:'Ejemplo con cuna',items:exampleItems()}
+]}}
+function load(){try{const s=JSON.parse(localStorage.getItem(STORE));if(s&&s.layouts&&s.layouts.length){
+  if(s.room.H===undefined)Object.assign(s.room,{H:ROOM0.H,winSill:ROOM0.winSill,winH:ROOM0.winH});
+  if(s.room.col2W===undefined){ // medidas reales de la pared de la puerta
+    Object.assign(s.room,{col2W:ROOM0.col2W,col2D:ROOM0.col2D,doorX:ROOM0.doorX,doorW:ROOM0.doorW});
+    s.layouts.forEach(l=>l.items.forEach(i=>{if(i.name==='Kallax 4×4'&&i.x===126&&i.y===311)i.x=96}));
+  }
+  if(!(s.room.v>=3)){ // armario y radiador empotrados
+    Object.assign(s.room,{radX:ROOM0.radX,radW:ROOM0.radW,radD:ROOM0.radD,wardD:ROOM0.wardD,wardDoor:ROOM0.wardDoor,colD:ROOM0.colD,col2D:ROOM0.col2D,v:3});
+    s.layouts.forEach(l=>l.items.forEach(i=>{if(i.name==='Cama (actual)'&&i.y===62)i.y=10}));
+  }
+  if(!(s.seeds||[]).includes('ce')){ // distribución guardada por la familia
+    if(!s.layouts.some(l=>l.name==='Cuna + Escritorio'))s.layouts.unshift(cunaEscritorio());
+    s.seeds=[...(s.seeds||[]),'ce'];
+  }
+  return s}}catch(e){}return null}
+function save(){try{localStorage.setItem(STORE,JSON.stringify(S))}catch(e){}}
+
+let S=load()||seed();
+let selId=null, undoStack=[], drag=null;
+const cur=()=>S.layouts.find(l=>l.id===S.active)||S.layouts[0];
+const selItem=()=>cur().items.find(i=>i.id===selId);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const r1=v=>Math.round(v*10)/10;
+
+function pushUndo(snap){undoStack.push(snap||JSON.stringify(S)); if(undoStack.length>60)undoStack.shift(); $('#undo').disabled=false}
+function mutate(fn,opts){pushUndo(); fn(); save(); renderAll(opts)}
+
+/* geometría */
+function fp(it){return it.rot%180?{x:it.x,y:it.y,w:it.d,d:it.w}:{x:it.x,y:it.y,w:it.w,d:it.d}}
+function clampItem(it){const f=fp(it),r=S.room; it.x=Math.min(Math.max(0,it.x),Math.max(0,r.W-f.w)); it.y=Math.min(Math.max(0,it.y),Math.max(0,r.L-f.d))}
+function overlap(a,b){return a.x<b.x+b.w-.01&&b.x<a.x+a.w-.01&&a.y<b.y+b.d-.01&&b.y<a.y+a.d-.01}
+function inter(a,b){const x=Math.max(a.x,b.x),y=Math.max(a.y,b.y),x2=Math.min(a.x+a.w,b.x+b.w),y2=Math.min(a.y+a.d,b.y+b.d);return x2>x&&y2>y?{x,y,w:x2-x,d:y2-y}:null}
+function rdist(a,b){const dx=Math.max(0,b.x-(a.x+a.w),a.x-(b.x+b.w)),dy=Math.max(0,b.y-(a.y+a.d),a.y-(b.y+b.d));return Math.hypot(dx,dy)}
+function doorGeo(r){const hx=r.doorHinge==='left'?r.doorX:r.doorX+r.doorW;return {hx,hy:r.L,R:r.doorW,q:{x:r.doorHinge==='left'?hx:hx-r.doorW,y:r.L-r.doorW,w:r.doorW,d:r.doorW}}}
+function hitsDoor(f,r){const g=doorGeo(r),I=inter(f,g.q);if(!I)return false;const cx=Math.min(Math.max(g.hx,I.x),I.x+I.w),cy=Math.min(Math.max(g.hy,I.y),I.y+I.d);return Math.hypot(cx-g.hx,cy-g.hy)<g.R-.5}
+function obstacles(r){return [
+  {name:'el armario empotrado',x:r.W-r.colW-r.wardW,y:-r.wardD,w:r.wardW,d:r.wardD,hard:1},
+  {name:'la columna',x:r.W-r.colW,y:0,w:r.colW,d:r.colD,hard:1},
+  {name:'el radiador',x:r.radX,y:-r.radD,w:r.radW,d:r.radD,hard:1},
+  {name:'la apertura del armario',x:r.W-r.colW-r.wardW,y:0,w:r.wardW,d:r.wardDoor,hard:0},
+  {name:'la columna junto al Kallax',x:r.W-r.col2W,y:r.L-r.col2D,w:r.col2W,d:r.col2D,hard:1}
+]}
+
+function analyze(){
+  const r=S.room,items=cur().items,st=new Map(),warns=[];
+  const mark=(id,l)=>{if(st.get(id)!=='err')st.set(id,l)};
+  const fl=items.filter(i=>i.kind==='floor');
+  for(let i=0;i<fl.length;i++)for(let j=i+1;j<fl.length;j++){
+    const a=fl[i],b=fl[j];
+    if(overlap(fp(a),fp(b))){mark(a.id,'err');mark(b.id,'err');warns.push({l:'err',t:`${a.name} y ${b.name} se solapan`,id:a.id})}
+  }
+  const obs=obstacles(r), rad=obs[2];
+  for(const a of fl){
+    const f=fp(a);
+    for(const o of obs) if(overlap(f,o)){
+      if(o.hard){mark(a.id,'err');warns.push({l:'err',t:`${a.name} choca con ${o.name}`,id:a.id})}
+      else{mark(a.id,'warn');warns.push({l:'warn',t:`${a.name} tapa ${o.name}`,id:a.id})}
+    }
+    if(hitsDoor(f,r)){mark(a.id,'warn');warns.push({l:'warn',t:`${a.name} está en el giro de la puerta`,id:a.id})}
+    if(a.baby){
+      const dr=rdist(f,rad);
+      if(!overlap(f,rad)&&dr<30){mark(a.id,'warn');warns.push({l:'warn',t:`${a.name} a ${Math.round(dr)} cm del radiador (mejor más de 30)`,id:a.id})}
+      if(f.y<40&&f.x<r.winX+r.winW&&f.x+f.w>r.winX){mark(a.id,'warn');warns.push({l:'warn',t:`${a.name} justo bajo la ventana (cordones, corrientes)`,id:a.id})}
+    }
+  }
+  return {st,warns}
+}
+
+/* plano */
+function render(){
+  const r=S.room,W=r.W,L=r.L,A=analyze();
+  const pad=32, TOP=Math.max(T,r.wardD+4,r.radD+T);
+  svg.setAttribute('viewBox',`${-T-pad} ${-TOP-pad-6} ${W+2*T+2*pad} ${L+T+TOP+2*pad+6}`);
+  let h=`<defs>
+  <pattern id="g10" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M10 0H0V10" class="gmin"/></pattern>
+  <pattern id="g50" width="50" height="50" patternUnits="userSpaceOnUse"><rect width="50" height="50" fill="url(#g10)"/><path d="M50 0H0V50" class="gmaj"/></pattern>
+  <pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="5" class="hatchl"/></pattern></defs>`;
+  h+=`<rect x="${-T}" y="${-T}" width="${W+2*T}" height="${L+2*T}" class="wall"/>`;
+  h+=`<rect x="0" y="0" width="${W}" height="${L}" class="floor"/><rect x="0" y="0" width="${W}" height="${L}" fill="url(#g50)"/>`;
+  // huecos en la pared (armario y radiador) y ventana
+  const o=obstacles(r);
+  h+=`<rect x="${o[0].x-4}" y="${-r.wardD-4}" width="${o[0].w+8}" height="${r.wardD+4}" class="wall"/>`;
+  h+=`<rect x="${Math.min(r.winX,r.radX)}" y="${-r.radD-T}" width="${Math.max(r.winX+r.winW,r.radX+r.radW)-Math.min(r.winX,r.radX)}" height="${r.radD+T}" class="wall"/>`;
+  h+=`<rect x="${r.winX}" y="${-r.radD-T+3}" width="${r.winW}" height="${T-6}" class="glass"/><line x1="${r.winX}" x2="${r.winX+r.winW}" y1="${-r.radD-T/2}" y2="${-r.radD-T/2}" class="glassl"/>`;
+  // puerta
+  const g=doorGeo(r),s=r.doorHinge==='left'?1:-1;
+  h+=`<rect x="${r.doorX}" y="${L}" width="${r.doorW}" height="${T}" class="floor"/>`;
+  h+=`<path d="M${g.hx} ${L} L${g.hx+s*g.R} ${L} A${g.R} ${g.R} 0 0 ${s>0?0:1} ${g.hx} ${L-g.R} Z" class="doorarc"/>`;
+  h+=`<line x1="${g.hx}" y1="${L}" x2="${g.hx}" y2="${L-g.R}" class="doorleaf"/>`;
+  // fijos
+  h+=`<rect x="${o[3].x}" y="${o[3].y}" width="${o[3].w}" height="${o[3].d}" class="zone"/>`;
+  h+=`<rect x="${o[0].x}" y="${o[0].y}" width="${o[0].w}" height="${o[0].d}" class="fixed"/>`;
+  h+=`<text x="${o[0].x+o[0].w/2}" y="${o[0].y+o[0].d/2-1}" font-size="8" text-anchor="middle" class="flbl">Armario empotrado</text>`;
+  h+=`<text x="${o[0].x+o[0].w/2}" y="${o[0].y+o[0].d/2+9}" font-size="6.5" text-anchor="middle" class="mlbl">${r.wardW} × ${r.wardD}</text>`;
+  h+=`<rect x="${o[1].x}" y="0" width="${o[1].w}" height="${o[1].d}" class="fixed"/><rect x="${o[1].x}" y="0" width="${o[1].w}" height="${o[1].d}" fill="url(#hatch)"/>`;
+  h+=`<rect x="${o[4].x}" y="${o[4].y}" width="${o[4].w}" height="${o[4].d}" class="fixed"/><rect x="${o[4].x}" y="${o[4].y}" width="${o[4].w}" height="${o[4].d}" fill="url(#hatch)"/>`;
+  h+=`<rect x="${o[2].x}" y="${o[2].y}" width="${o[2].w}" height="${o[2].d}" class="rad"/>`;
+  for(let x=o[2].x+5;x<o[2].x+o[2].w;x+=5)h+=`<line x1="${x}" x2="${x}" y1="${o[2].y+2}" y2="${o[2].y+o[2].d-2}" class="hatchl"/>`;
+  // lámpara
+  h+=`<g opacity=".8"><circle cx="${W/2}" cy="${L/2}" r="5" class="lamp"/><path d="M${W/2-8} ${L/2}h16M${W/2} ${L/2-8}v16" class="lamp"/></g>`;
+  // cotas exteriores
+  h+=`<path d="M0 ${-TOP-14}H${W}M0 ${-TOP-18}v8M${W} ${-TOP-18}v8" class="mline"/><text x="${W/2}" y="${-TOP-18}" font-size="8" text-anchor="middle" class="mlbl">${W} cm · ventana</text>`;
+  h+=`<path d="M${-T-14} 0V${L}M${-T-18} 0h8M${-T-18} ${L}h8" class="mline"/><text transform="translate(${-T-18} ${L/2}) rotate(-90)" font-size="8" text-anchor="middle" class="mlbl">${L} cm · pared del escritorio</text>`;
+  h+=`<text x="${r.doorX+r.doorW/2}" y="${L+T+11}" font-size="8" text-anchor="middle" class="mlbl">puerta</text>`;
+  h+=`<text transform="translate(${W+T+14} ${L/2}) rotate(90)" font-size="8" text-anchor="middle" class="mlbl">pared de la cama</text>`;
+  h+=`<text x="${r.winX+r.winW/2}" y="${-r.radD-T-3}" font-size="6.5" text-anchor="middle" class="mlbl">ventana ${r.winW} · radiador ${r.radW}</text>`;
+  // muebles
+  const order={overlay:0,floor:1,wall:2,ceiling:3};
+  const items=[...cur().items].sort((a,b)=>order[a.kind]-order[b.kind]||(a.id===selId)-(b.id===selId));
+  for(const it of items){
+    const f=fp(it),stt=A.st.get(it.id),cx=f.x+f.w/2,cy=f.y+f.d/2;
+    h+=`<g class="item k-${it.kind}${stt?' st-'+stt:''}${it.id===selId?' sel':''}" data-id="${it.id}">`;
+    h+=it.shape==='round'
+      ?`<ellipse cx="${cx}" cy="${cy}" rx="${f.w/2}" ry="${f.d/2}" class="body" style="fill:var(--i-${it.color})"/>`
+      :`<rect x="${f.x}" y="${f.y}" width="${f.w}" height="${f.d}" rx="1.5" class="body" style="fill:var(--i-${it.color})"/>`;
+    if(it.kind!=='wall'){
+      const vert=f.d>f.w*1.3, long=vert?f.d:f.w, short=vert?f.w:f.d;
+      let fs=Math.max(5,Math.min(9,short/5));
+      const nameW=it.name.length*fs*.56;
+      if(nameW>long-6)fs=Math.max(4.5,(long-6)/(it.name.length*.56));
+      const dims=`${it.w}×${it.d}`, showName=short>=fs*2.6&&it.name.length*fs*.56<=long-4;
+      const tr=vert?` transform="rotate(-90 ${cx} ${cy})"`:'';
+      if(showName)h+=`<g${tr}><text class="lbl" x="${cx}" y="${cy-fs*.15}" font-size="${fs}" text-anchor="middle">${esc(it.name)}</text><text class="lbld" x="${cx}" y="${cy+fs*.95}" font-size="${fs*.85}" text-anchor="middle">${dims}</text></g>`;
+      else if(short>=8&&dims.length*5*.6<=long)h+=`<g${tr}><text class="lbld" x="${cx}" y="${cy+2}" font-size="5" text-anchor="middle">${dims}</text></g>`;
+    }
+    h+=`</g>`;
+  }
+  // cotas del seleccionado
+  const it=selItem();
+  if(it){
+    const f=fp(it),my=f.y+f.d/2,mx=f.x+f.w/2;
+    const seg=(x1,y1,x2,y2,v,tx,ty)=>{if(v<1)return'';return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="dim"/><text x="${tx}" y="${ty}" font-size="7.5" text-anchor="middle" class="dimt">${r1(v)}</text>`};
+    h+=seg(0,my,f.x,my,f.x,f.x/2,my-3);
+    h+=seg(f.x+f.w,my,W,my,W-f.x-f.w,(f.x+f.w+W)/2,my-3);
+    h+=seg(mx,0,mx,f.y,f.y,mx+1,f.y/2+3);
+    h+=seg(mx,f.y+f.d,mx,L,L-f.y-f.d,mx+1,(f.y+f.d+L)/2+3);
+  }
+  svg.innerHTML=h;
+  return A;
+}
+
+/* paneles */
+function renderStatus(A){
+  const e=A.warns.filter(w=>w.l==='err').length,w=A.warns.length-e,p=$('#status');
+  p.className='pill '+(e?'err':w?'warn':'ok');
+  p.textContent=e?`${e} choque${e>1?'s':''}${w?` · ${w} aviso${w>1?'s':''}`:''}`:w?`${w} aviso${w>1?'s':''}`:'Sin conflictos';
+  const ul=$('#warns');
+  ul.innerHTML=A.warns.length?A.warns.map((x,i)=>`<li><button data-sel="${x.id}"><span class="dot ${x.l}"></span><span>${esc(x.t)}</span></button></li>`).join(''):`<li class="okmsg">Todo cabe sin chocar.</li>`;
+  $('#items').innerHTML=cur().items.map(i=>`<li><button data-sel="${i.id}" aria-current="${i.id===selId}"><span class="dot ${A.st.get(i.id)||(i.kind==='floor'?'':'none')}"></span><span>${esc(i.name)}</span><span class="m">${i.w}×${i.d}</span></button></li>`).join('')||`<li class="note">Plano vacío. Añade muebles desde el catálogo.</li>`;
+}
+function renderInspector(){
+  const it=selItem(),el=$('#sel');
+  if(!it){el.innerHTML=`<p class="hint">Toca un mueble del plano para seleccionarlo y arrástralo para moverlo. Con uno seleccionado: <kbd>←</kbd><kbd>→</kbd><kbd>↑</kbd><kbd>↓</kbd> mueven 1 cm (con <kbd>Mayús</kbd> 10 cm), <kbd>R</kbd> gira y <kbd>Supr</kbd> lo quita.</p>`;return}
+  el.innerHTML=`
+  <div class="field"><label for="f-name">Nombre</label><input id="f-name" value="${esc(it.name)}"></div>
+  <div class="grid3">
+    <div class="field"><label for="f-w">Ancho</label><input id="f-w" type="number" min="1" value="${it.w}"></div>
+    <div class="field"><label for="f-d">Fondo</label><input id="f-d" type="number" min="1" value="${it.d}"></div>
+    <div class="field"><label for="f-h">Alto</label><input id="f-h" type="number" min="0" value="${it.h}"></div>
+  </div>
+  <div class="grid2">
+    <div class="field"><label for="f-x">A pared escritorio</label><input id="f-x" type="number" value="${r1(it.x)}"></div>
+    <div class="field"><label for="f-y">A pared ventana</label><input id="f-y" type="number" value="${r1(it.y)}"></div>
+  </div>
+  <div class="field"><label for="f-kind">Tipo</label><select id="f-kind">${Object.entries(KINDS).map(([k,v])=>`<option value="${k}"${k===it.kind?' selected':''}>${v}</option>`).join('')}</select></div>
+  <div class="swatches" role="group" aria-label="Color">${COLORS.map(c=>`<button data-c="${c}" aria-pressed="${c===it.color}" aria-label="${c}" style="background:var(--i-${c})"></button>`).join('')}</div>
+  <div class="btnrow"><button class="btn" id="b-rot">Girar 90°</button><button class="btn" id="b-dup">Duplicar</button><button class="btn danger" id="b-del">Quitar</button></div>`;
+  const num=(id,k)=>$(id).addEventListener('change',e=>{const v=parseFloat(e.target.value);if(isNaN(v))return;mutate(()=>{it[k]=Math.max(k==='h'||k==='x'||k==='y'?0:1,v);clampItem(it)})});
+  num('#f-w','w');num('#f-d','d');num('#f-h','h');num('#f-x','x');num('#f-y','y');
+  $('#f-name').addEventListener('change',e=>mutate(()=>{it.name=e.target.value.trim()||it.name}));
+  $('#f-kind').addEventListener('change',e=>mutate(()=>{it.kind=e.target.value}));
+  el.querySelectorAll('[data-c]').forEach(b=>b.addEventListener('click',()=>mutate(()=>{it.color=b.dataset.c})));
+  $('#b-rot').addEventListener('click',rotateSel);
+  $('#b-dup').addEventListener('click',dupSel);
+  $('#b-del').addEventListener('click',removeSel);
+}
+function rotateSel(){const it=selItem();if(!it)return;mutate(()=>{const f=fp(it),cx=f.x+f.w/2,cy=f.y+f.d/2;it.rot=it.rot?0:90;const n=fp(it);it.x=Math.round(cx-n.w/2);it.y=Math.round(cy-n.d/2);clampItem(it)})}
+function dupSel(){const it=selItem();if(!it)return;const c={...it,id:uid(),x:it.x+10,y:it.y+10};mutate(()=>{clampItem(c);cur().items.push(c);selId=c.id})}
+function nudge(dx,dy){const it=selItem();if(!it)return;mutate(()=>{it.x+=dx;it.y+=dy;clampItem(it)},{keepInspector:1});const fx=$('#f-x');if(fx){fx.value=r1(it.x);$('#f-y').value=r1(it.y)}}
+function renderMbar(A){
+  const it=selItem(),m=$('#mbar');
+  if(!it){m.innerHTML=`<div class="mrow"><button class="btn primary grow" data-act="add">+ Añadir mueble</button><button class="btn" data-act="undo"${undoStack.length?'':' disabled'}>Deshacer</button></div><p class="note">Toca un mueble para moverlo, girarlo o quitarlo. Arrástralo con el dedo para colocarlo.</p>`;return}
+  const stt=A.st.get(it.id);
+  m.innerHTML=`<div class="mrow"><span class="dot ${stt||(it.kind==='floor'?'':'none')}"></span><strong class="mname">${esc(it.name)}</strong><span class="m">${it.w}×${it.d}</span><button class="btn" data-act="undo"${undoStack.length?'':' disabled'} aria-label="Deshacer">↶</button><button class="btn" data-act="desel" aria-label="Terminar">✓</button></div>
+  <div class="mrow"><div class="nudge" role="group" aria-label="Mover 1 cm"><button data-act="l" aria-label="Izquierda">◀</button><button data-act="u" aria-label="Arriba">▲</button><button data-act="d" aria-label="Abajo">▼</button><button data-act="r" aria-label="Derecha">▶</button></div><button class="btn grow" data-act="rot">Girar</button><button class="btn grow" data-act="dup">Copiar</button><button class="btn danger grow" data-act="del">Quitar</button></div>`;
+}
+const isPhone=()=>window.matchMedia('(max-width:760px)').matches;
+function sheet(open){document.body.classList.toggle('sheet',open)}
+function removeSel(){if(!selItem())return;mutate(()=>{cur().items=cur().items.filter(i=>i.id!==selId);selId=null})}
+
+function renderChips(){
+  $('#chips').innerHTML=S.layouts.map(l=>`<button class="chip" data-l="${l.id}" aria-pressed="${l.id===S.active}">${esc(l.name)}</button>`).join('');
+  $('#layoutName').value=cur().name;
+  $('#delLayout').disabled=S.layouts.length<2;
+}
+function renderRoomForm(){
+  const r=S.room;
+  $('#roomform').innerHTML=ROOM_FIELDS.map(([k,l,e])=>`<div class="field"><label for="r-${k}">${l}${e?' <span class="est">≈</span>':''}</label><input id="r-${k}" type="number" min="0" value="${r[k]}" data-k="${k}"></div>`).join('')
+   +`<div class="field full"><label for="r-hinge">Bisagras de la puerta <span class="est">≈</span></label><select id="r-hinge"><option value="left"${r.doorHinge==='left'?' selected':''}>Lado escritorio</option><option value="right"${r.doorHinge==='right'?' selected':''}>Lado cama</option></select></div>`;
+  $('#roomsub').textContent=`Plano a escala · ${r.W} × ${r.L} cm`;
+}
+
+let lastSel='__';
+function renderAll(opts={}){
+  const A=render();renderStatus(A);
+  if(!opts.keepInspector||lastSel!==selId)renderInspector();
+  lastSel=selId;renderChips();renderMbar(A);
+  $('#roomsub').textContent=`Plano a escala · ${S.room.W} × ${S.room.L} cm`;
+  document.querySelectorAll('#snap button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.v===S.snap));
+  $('#undo').disabled=!undoStack.length;
+  if(view3d&&T3.renderer)build3d();
+}
+function select(id){selId=id;renderAll()}
+
+/* catálogo */
+$('#catalog').innerHTML=CATALOG.map((g,gi)=>`<div class="cat-group"><h3>${g.group}</h3>${g.items.map((i,ii)=>`<button class="add" data-add="${gi}.${ii}"><span class="n">${esc(i.name)}</span><span class="m">${i.w}×${i.d}</span></button>`).join('')}</div>`).join('');
+function place(spec){
+  const it=mk(spec,0,0),r=S.room,f=fp(it);
+  const blockers=[...cur().items.filter(i=>i.kind==='floor').map(fp),...obstacles(r)];
+  let best=null;
+  if(it.kind==='floor'){
+    outer:for(let y=0;y<=r.L-f.d;y+=5)for(let x=0;x<=r.W-f.w;x+=5){const c={x,y,w:f.w,d:f.d};if(!blockers.some(b=>overlap(c,b))&&!hitsDoor(c,r)){best=c;break outer}}
+  }
+  if(best){it.x=best.x;it.y=best.y}else{it.x=Math.round(r.W/2-f.w/2);it.y=Math.round(r.L/2-f.d/2)}
+  clampItem(it);
+  mutate(()=>{cur().items.push(it);selId=it.id});
+  if(isPhone()){sheet(false);svg.scrollIntoView({block:'center'})}
+}
+$('#catalog').addEventListener('click',e=>{const b=e.target.closest('[data-add]');if(!b)return;const[g,i]=b.dataset.add.split('.');place(CATALOG[g].items[i])});
+$('#customForm').addEventListener('submit',e=>{e.preventDefault();const w=+$('#c-w').value,d=+$('#c-d').value;if(!(w>0&&d>0))return;place({name:$('#c-name').value.trim()||'Mueble',w,d,h:+$('#c-h').value||0,color:'stone'});$('#c-name').value=''});
+
+/* listas y distribuciones */
+document.addEventListener('click',e=>{const b=e.target.closest('[data-sel]');if(b)select(b.dataset.sel)});
+$('#chips').addEventListener('click',e=>{const b=e.target.closest('[data-l]');if(!b)return;S.active=b.dataset.l;selId=null;save();renderAll()});
+$('#newLayout').addEventListener('click',()=>mutate(()=>{const c=JSON.parse(JSON.stringify(cur()));c.id='l'+uid();c.name=cur().name+' (copia)';c.items.forEach(i=>i.id=uid());S.layouts.push(c);S.active=c.id;selId=null}));
+$('#layoutName').addEventListener('change',e=>mutate(()=>{cur().name=e.target.value.trim()||cur().name}));
+function armed(btn,label,fn){btn.addEventListener('click',()=>{if(btn.classList.contains('armed')){btn.classList.remove('armed');btn.textContent=label;fn();return}btn.classList.add('armed');btn.textContent='¿Seguro? Pulsa otra vez';setTimeout(()=>{btn.classList.remove('armed');btn.textContent=label},3500)})}
+armed($('#delLayout'),'Borrar',()=>{if(S.layouts.length<2)return;mutate(()=>{S.layouts=S.layouts.filter(l=>l.id!==S.active);S.active=S.layouts[0].id;selId=null})});
+$('#exportLayout').addEventListener('click',()=>{
+  const l=cur(),txt=JSON.stringify({name:l.name,items:l.items.map(({id,...i})=>i)}),ta=$('#shareText');
+  ta.value=txt;
+  const ok=()=>{$('#shareMsg').textContent='Copiada. Pégala en el otro dispositivo o envíala.'};
+  const fallback=()=>{ta.focus();ta.select();$('#shareMsg').textContent='Texto seleccionado: cópialo con Ctrl+C (o mantén pulsado en el móvil).'};
+  try{navigator.clipboard.writeText(txt).then(ok,fallback)}catch(e){fallback()}
+});
+$('#importLayout').addEventListener('click',()=>{
+  let d;try{d=JSON.parse($('#shareText').value.trim())}catch(e){$('#shareMsg').textContent='No se reconoce el texto. Pega el texto completo que copiaste.';return}
+  if(!d||!Array.isArray(d.items)){$('#shareMsg').textContent='El texto no contiene una distribución.';return}
+  mutate(()=>{const l={id:'l'+uid(),name:String(d.name||'Importada'),items:d.items.map(i=>({...i,id:uid()}))};l.items.forEach(clampItem);S.layouts.push(l);S.active=l.id;selId=null});
+  $('#shareMsg').textContent='Añadida como «'+cur().name+'».';$('#shareText').value='';
+});
+armed($('#reset'),'Restaurar plano inicial',()=>{mutate(()=>{const s=seed();S.room=s.room;S.layouts=s.layouts;S.active=s.active;S.seeds=s.seeds;selId=null});renderRoomForm()});
+$('#roomform').addEventListener('change',e=>{const k=e.target.dataset.k;if(k){const v=parseFloat(e.target.value);if(isNaN(v)||v<0)return;mutate(()=>{S.room[k]=v;cur().items.forEach(clampItem)})}else if(e.target.id==='r-hinge')mutate(()=>{S.room.doorHinge=e.target.value})});
+$('#snap').addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;S.snap=+b.dataset.v;save();renderAll({keepInspector:1})});
+function undo(){const s=undoStack.pop();if(!s)return;S=JSON.parse(s);if(!selItem())selId=null;save();renderRoomForm();renderAll()}
+$('#undo').addEventListener('click',undo);
+
+/* arrastre */
+function pt(e){const m=svg.getScreenCTM().inverse();return new DOMPoint(e.clientX,e.clientY).matrixTransform(m)}
+svg.addEventListener('pointerdown',e=>{
+  const g=e.target.closest('[data-id]');
+  if(!g){if(selId)select(null);return}
+  const it=cur().items.find(i=>i.id===g.dataset.id),p=pt(e);
+  if(selId!==it.id)select(it.id);
+  drag={id:it.id,ox:p.x-it.x,oy:p.y-it.y,snap:JSON.stringify(S),moved:false};
+  svg.setPointerCapture(e.pointerId);svg.classList.add('dragging');e.preventDefault();
+});
+svg.addEventListener('pointermove',e=>{
+  if(!drag)return;
+  const it=cur().items.find(i=>i.id===drag.id);if(!it)return;
+  const p=pt(e),sn=S.snap||1;
+  const nx=Math.round((p.x-drag.ox)/sn)*sn,ny=Math.round((p.y-drag.oy)/sn)*sn;
+  if(nx===it.x&&ny===it.y)return;
+  it.x=nx;it.y=ny;clampItem(it);drag.moved=true;
+  const A=render();renderStatus(A);
+  const fx=$('#f-x'),fy=$('#f-y');if(fx){fx.value=r1(it.x);fy.value=r1(it.y)}
+});
+function endDrag(){if(!drag)return;if(drag.moved){pushUndo(drag.snap);save()}drag=null;svg.classList.remove('dragging')}
+svg.addEventListener('pointerup',endDrag);svg.addEventListener('pointercancel',endDrag);
+
+document.addEventListener('keydown',e=>{
+  const tag=(e.target.tagName||'').toLowerCase();
+  if(tag==='input'||tag==='select'||tag==='textarea')return;
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();undo();return}
+  const it=selItem();if(!it)return;
+  const st=e.shiftKey?10:1,mv={ArrowLeft:[-st,0],ArrowRight:[st,0],ArrowUp:[0,-st],ArrowDown:[0,st]}[e.key];
+  if(mv){e.preventDefault();mutate(()=>{it.x+=mv[0];it.y+=mv[1];clampItem(it)},{keepInspector:1});const fx=$('#f-x');if(fx){fx.value=r1(it.x);$('#f-y').value=r1(it.y)}}
+  else if(e.key==='r'||e.key==='R'){e.preventDefault();rotateSel()}
+  else if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();removeSel()}
+  else if(e.key==='Escape')select(null);
+});
+
+$('#mbar').addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');if(!b||b.disabled)return;
+  const a=b.dataset.act;
+  ({add:()=>sheet(true),undo,desel:()=>select(null),rot:rotateSel,dup:dupSel,del:removeSel,
+    l:()=>nudge(-1,0),r:()=>nudge(1,0),u:()=>nudge(0,-1),d:()=>nudge(0,1)})[a]();
+});
+$('#scrim').addEventListener('click',()=>sheet(false));
+$('#closeSheet').addEventListener('click',()=>sheet(false));
+
+/* vista 3D isométrica */
+let view3d=false, corner=0;
+const T3={mats:{}};
+const HEX={rose:0xE7A6BA,sand:0xD9BF8E,sage:0xA9CBA9,sky:0xA9C7E6,lilac:0xB9A8DE,stone:0xC6C2B9};
+const C3={wall:0xF2EFEA,white:0xF5F5F2,wood:0xD9C39E,woodDark:0xC9AF86,dark:0x2E3035,frame:0x7A3B2A,glass:0xA9D3EE,foam:0xBDB7AF,stub:0xB9B2A8};
+function loadScript(src){return new Promise((res,rej)=>{const e=document.createElement('script');e.src=src;e.onload=res;e.onerror=rej;document.head.appendChild(e)})}
+async function ensureThree(){
+  if(!window.THREE)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js');
+  if(!THREE.OrbitControls)await loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js');
+}
+async function setView(v){
+  view3d=v;
+  document.querySelectorAll('#viewSeg button').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.view==='3d')===v));
+  document.querySelector('.planwrap').hidden=v; document.querySelector('.legend').hidden=v; $('#wrap3d').hidden=!v;
+  if(!v)return;
+  $('#msg3d').textContent='Cargando la vista 3D…';
+  try{await ensureThree()}catch(e){$('#msg3d').textContent='No se pudo cargar la vista 3D. Comprueba la conexión a internet.';return}
+  init3d();resize3d();build3d();
+  $('#msg3d').textContent='Arrastra para girar · rueda o pellizco para acercar';
+}
+function init3d(){
+  if(T3.renderer)return;
+  const el=$('#canvas3d');
+  const r=new THREE.WebGLRenderer({antialias:true,alpha:true});
+  r.setPixelRatio(Math.min(window.devicePixelRatio||1,2));el.appendChild(r.domElement);
+  const scene=new THREE.Scene();
+  const cam=new THREE.OrthographicCamera(-1,1,1,-1,-5000,5000);
+  const ctr=new THREE.OrbitControls(cam,r.domElement);
+  ctr.enableDamping=true;ctr.maxPolarAngle=Math.PI/2.1;ctr.minZoom=.6;ctr.maxZoom=5;
+  scene.add(new THREE.HemisphereLight(0xffffff,0xa89c8c,.95));
+  const sun=new THREE.DirectionalLight(0xffffff,.45);sun.position.set(-200,500,-350);scene.add(sun);
+  const fill=new THREE.DirectionalLight(0xffffff,.18);fill.position.set(300,200,400);scene.add(fill);
+  Object.assign(T3,{renderer:r,scene,cam,ctr});
+  ctr.addEventListener('change',cutaway);
+  if(window.ResizeObserver)new ResizeObserver(resize3d).observe(el);
+  (function loop(){requestAnimationFrame(loop);if(!view3d)return;ctr.update();r.render(scene,cam)})();
+}
+function resize3d(){
+  if(!T3.renderer)return;
+  const el=$('#canvas3d'),w=el.clientWidth,h=el.clientHeight;if(!w||!h)return;
+  T3.renderer.setSize(w,h,false);
+  const R=S.room,vs=(R.W+R.L)*.78,a=w/h,c=T3.cam;
+  if(a>=1){c.left=-vs*a/2;c.right=vs*a/2;c.top=vs/2;c.bottom=-vs/2}
+  else{c.left=-vs/2;c.right=vs/2;c.top=vs/a/2;c.bottom=-vs/a/2}
+  c.updateProjectionMatrix();
+}
+function isoView(){
+  const R=S.room,H=R.H||250,dirs=[[1,1],[-1,1],[-1,-1],[1,-1]],[sx,sz]=dirs[corner];
+  T3.ctr.target.set(R.W/2,H*.3,R.L/2);
+  T3.cam.position.set(R.W/2+sx*1000,H*.3+880,R.L/2+sz*1000);
+  T3.cam.zoom=1;T3.cam.updateProjectionMatrix();T3.ctr.update();cutaway();
+}
+function cutaway(){
+  if(!T3.walls)return;
+  const v=T3.cam.position.clone().sub(T3.ctr.target);
+  T3.walls.top.visible=!(v.z<-1);T3.walls.bottom.visible=!(v.z>1);
+  T3.walls.left.visible=!(v.x<-1);T3.walls.right.visible=!(v.x>1);
+}
+function mat(c,o){const k=c+'|'+(o||1);return T3.mats[k]||(T3.mats[k]=new THREE.MeshLambertMaterial({color:c,transparent:!!o,opacity:o||1}))}
+function edgeMat(){return T3.edge||(T3.edge=new THREE.LineBasicMaterial({color:0x2f343a,transparent:true,opacity:.22}))}
+// caja con centro x,z y base en y
+function bx(g,w,h,d,c,x,y,z,o){
+  if(w<=0||h<=0||d<=0)return;
+  const geo=new THREE.BoxGeometry(w,h,d),m=new THREE.Mesh(geo,mat(c,o));m.position.set(x,y+h/2,z);g.add(m);
+  if(!o&&Math.min(w,h,d)>1.2){const e=new THREE.LineSegments(new THREE.EdgesGeometry(geo),edgeMat());e.position.copy(m.position);g.add(e)}
+  return m;
+}
+function cyl(g,r1,r2,h,c,x,y,z,seg){const m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,seg||24),mat(c));m.position.set(x,y+h/2,z);g.add(m);return m}
+// pieza que gira alrededor del centro (aspas, patas de la silla)
+function spoke(g,len,h,w,c,y,ang){const geo=new THREE.BoxGeometry(len,h,w);geo.translate(len/2,0,0);const m=new THREE.Mesh(geo,mat(c));m.position.set(0,y+h/2,0);m.rotation.y=ang;g.add(m)}
+function floorTexture(){
+  if(T3.floorTex)return T3.floorTex;
+  const cv=document.createElement('canvas');cv.width=512;cv.height=512;const x=cv.getContext('2d');
+  const tones=['#CDA97F','#C49F74','#D3B088','#C8A479','#BF9A6E'];
+  for(let r=0;r<8;r++){const off=(r*137)%256;for(let k=-1;k<3;k++){x.fillStyle=tones[(r*3+k+5)%5];x.fillRect(off+k*256,r*64,256,64)}}
+  x.strokeStyle='rgba(90,60,30,.35)';x.lineWidth=2;
+  for(let r=0;r<=8;r++){x.beginPath();x.moveTo(0,r*64);x.lineTo(512,r*64);x.stroke()}
+  for(let r=0;r<8;r++){const off=(r*137)%256;for(let k=0;k<3;k++){const xx=off+k*256;x.beginPath();x.moveTo(xx,r*64);x.lineTo(xx,r*64+64);x.stroke()}}
+  const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;return T3.floorTex=t;
+}
+function buildRoom(g,R){
+  const W=R.W,L=R.L,H=R.H||250,TW=10,WALL=C3.wall;
+  // suelo
+  const tex=floorTexture();tex.repeat.set(W/160,L/160);
+  const fl=new THREE.Mesh(new THREE.PlaneGeometry(W,L),new THREE.MeshLambertMaterial({map:tex}));fl.rotation.x=-Math.PI/2;fl.position.set(W/2,0,L/2);g.add(fl);
+  bx(g,W+2*TW,2,L+2*TW,C3.stub,W/2,-2.1,L/2);
+  // zócalo bajo siempre visible para orientarse cuando una pared está recortada
+  bx(g,W+2*TW,5,TW,C3.stub,W/2,0,-TW/2);bx(g,W+2*TW,5,TW,C3.stub,W/2,0,L+TW/2);
+  bx(g,TW,5,L,C3.stub,-TW/2,0,L/2);bx(g,TW,5,L,C3.stub,W+TW/2,0,L/2);
+  const walls={top:new THREE.Group(),bottom:new THREE.Group(),left:new THREE.Group(),right:new THREE.Group()};
+  Object.values(walls).forEach(w=>g.add(w));
+  // pared de la ventana
+  const t=walls.top,sill=R.winSill||90,wh=R.winH||120,wx=R.winX,ww=R.winW,wardX=W-R.colW-R.wardW;
+  bx(t,wx+TW,H,TW,WALL,(wx-TW)/2,0,-TW/2);
+  bx(t,ww,sill,TW,WALL,wx+ww/2,0,-R.radD-TW/2);
+  bx(t,ww,3,R.radD+4,WALL,wx+ww/2,sill-3,-R.radD/2+2);
+  bx(t,ww,H-sill-wh,TW,WALL,wx+ww/2,sill+wh,-TW/2);
+  const fz=-TW/2,fw=7;
+  bx(t,fw,wh,8,C3.frame,wx+fw/2,sill,fz);bx(t,fw,wh,8,C3.frame,wx+ww-fw/2,sill,fz);
+  bx(t,ww,fw,8,C3.frame,wx+ww/2,sill,fz);bx(t,ww,fw,8,C3.frame,wx+ww/2,sill+wh-fw,fz);
+  bx(t,5,wh-2*fw,8,C3.frame,wx+ww*.6,sill+fw,fz);
+  bx(t,ww-2*fw,wh-2*fw,1,C3.glass,wx+ww/2,sill+fw,fz,.45);
+  // radiador en su hueco
+  bx(t,R.radW,55,7,C3.white,R.radX+R.radW/2,15,-R.radD/2-1);
+  for(let x=R.radX+5;x<R.radX+R.radW-2;x+=5)bx(t,1.2,52,1,0xdedbd5,x,16.5,-R.radD/2+2.6);
+  bx(t,wardX-wx-ww,H,TW,WALL,(wx+ww+wardX)/2,0,-TW/2);
+  // armario empotrado: puertas a ras de pared y altillo abierto
+  const dh=200;
+  bx(t,R.wardW,dh,3,C3.white,wardX+R.wardW/2,0,-1.5);
+  bx(t,.8,dh-4,.6,0x9a958e,wardX+R.wardW/2,2,.2);
+  bx(t,1.4,26,2.2,0x8e8a84,wardX+R.wardW/2-5,95,1);bx(t,1.4,26,2.2,0x8e8a84,wardX+R.wardW/2+5,95,1);
+  bx(t,R.wardW,H-dh,2,0xDCD8D1,wardX+R.wardW/2,dh,-R.wardD+1);
+  bx(t,2,H-dh,R.wardD,WALL,wardX+1,dh,-R.wardD/2);bx(t,2,H-dh,R.wardD,WALL,wardX+R.wardW-1,dh,-R.wardD/2);
+  bx(t,R.wardW,2,R.wardD,0xE6E2DB,wardX+R.wardW/2,dh,-R.wardD/2);
+  bx(t,R.colW+TW,H,TW+R.colD,WALL,W-R.colW/2+TW/2,0,(R.colD-TW)/2);
+  // paredes laterales
+  bx(walls.left,TW,H,L+2*TW,WALL,-TW/2,0,L/2);
+  bx(walls.right,TW,H,L+2*TW,WALL,W+TW/2,0,L/2);
+  // pared de la puerta
+  const b=walls.bottom,fx0=Math.max(0,R.doorX-5),fx1=R.doorX+R.doorW+5,dH=205;
+  if(fx0>0)bx(b,fx0+TW,H,TW,WALL,(fx0-TW)/2,0,L+TW/2);
+  bx(b,W-fx1+TW,H,TW,WALL,(fx1+W+TW)/2,0,L+TW/2);
+  bx(b,fx1-fx0,H-dH-5,TW,WALL,(fx0+fx1)/2,dH+5,L+TW/2);
+  bx(b,5,dH+5,3,C3.white,fx0+2.5,0,L-1);bx(b,5,dH+5,3,C3.white,fx1-2.5,0,L-1);bx(b,fx1-fx0,5,3,C3.white,(fx0+fx1)/2,dH,L-1);
+  bx(b,R.doorW,dH,4,C3.white,R.doorX+R.doorW/2,0,L+2);
+  const hx=R.doorHinge==='left'?R.doorX+R.doorW-7:R.doorX+7;
+  bx(b,12,2,3,0x8e8a84,hx,100,L-1);
+  bx(b,R.col2W,H,R.col2D+TW,WALL,W-R.col2W/2,0,L-R.col2D+(R.col2D+TW)/2);
+  // lámpara de techo de mimbre
+  cyl(g,.4,.4,40,0x555555,W/2,H-40,L/2,6);
+  cyl(g,12,25,32,0xC9A46A,W/2,H-72,L/2,28);
+  return walls;
+}
+/* modelos: ancho en X, fondo en Z, la parte trasera mira a -Z */
+function model(it,lw,ld,R){
+  const g=new THREE.Group(),n=it.name.toLowerCase(),col=HEX[it.color]||0xDEDDD7,h=it.h||60,H=R.H||250;
+  if(it.kind==='overlay'){bx(g,lw,1,ld,col,0,0,0);return g}
+  if(it.kind==='wall'){const ph=it.h||70;bx(g,lw,ph,2.5,0x3b3b3b,0,150-ph/2,-ld/2+1.25);bx(g,lw-5,ph-5,1,col,0,150-ph/2+2.5,-ld/2+3);return g}
+  if(/ventilador de techo/.test(n)){const y=H-30;cyl(g,.8,.8,30,0x777777,0,y,0,8);cyl(g,8,8,8,C3.white,0,y-4,0);for(let i=0;i<5;i++)spoke(g,lw/2-2,1,12,C3.white,y,i*Math.PI*2/5);return g}
+  if(/cuna|minicuna/.test(n)){
+    const ch=it.h||90,p=4.5;
+    [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>bx(g,p,ch,p,C3.white,a*(lw/2-p/2),0,b*(ld/2-p/2)));
+    bx(g,lw-2*p,4,ld-2*p,C3.white,0,22,0);bx(g,lw-2*p,10,ld-2*p,0xF7ECEF,0,26,0);
+    for(const zs of[-1,1]){bx(g,lw-2*p,4,3,C3.white,0,ch-4,zs*(ld/2-p/2));bx(g,lw-2*p,4,3,C3.white,0,26,zs*(ld/2-p/2));for(let x=-lw/2+p+5;x<lw/2-p-1;x+=8.5)bx(g,2.2,ch-34,2.2,C3.white,x,30,zs*(ld/2-p/2))}
+    for(const xs of[-1,1]){bx(g,3,4,ld-2*p,C3.white,xs*(lw/2-p/2),ch-4,0);bx(g,3,4,ld-2*p,C3.white,xs*(lw/2-p/2),26,0);for(let z=-ld/2+p+5;z<ld/2-p-1;z+=8.5)bx(g,2.2,ch-34,2.2,C3.white,xs*(lw/2-p/2),30,z)}
+    return g;
+  }
+  if(/kallax/.test(n)){
+    const kh=it.h||147,t=3.5,c=C3.wood;
+    bx(g,lw,t,ld,c,0,0,0);bx(g,lw,t,ld,c,0,kh-t,0);bx(g,t,kh,ld,c,-lw/2+t/2,0,0);bx(g,t,kh,ld,c,lw/2-t/2,0,0);
+    bx(g,lw-2*t,kh-2*t,1,C3.woodDark,0,t,-ld/2+.5);
+    const cols=Math.max(1,Math.round(lw/37.5)),rows=Math.max(1,Math.round(kh/37.5));
+    for(let i=1;i<cols;i++)bx(g,1.6,kh-2*t,ld-1,c,-lw/2+i*lw/cols,t,.5);
+    for(let j=1;j<rows;j++)bx(g,lw-2*t,1.6,ld-1,c,0,j*kh/rows-.8,.5);
+    return g;
+  }
+  if(/silla/.test(n)){
+    // silla de oficina: base de 5 radios con ruedas, pistón, asiento, brazos y respaldo de malla
+    const c=C3.dark,grey=0x45484E,metal=0xA3A6AA,R0=Math.min(lw,ld)/2-3;
+    for(let i=0;i<5;i++){const a=i*Math.PI*2/5;spoke(g,R0,3,4.5,c,4,a);const m=new THREE.Mesh(new THREE.SphereGeometry(2.6,10,8),mat(0x1F2023));m.position.set(Math.cos(a)*R0,2.6,-Math.sin(a)*R0);g.add(m)}
+    cyl(g,5,5,5,c,0,4,0,16);cyl(g,2.2,2.2,30,metal,0,9,0,12);
+    bx(g,18,4,18,c,0,39,0);
+    bx(g,48,7,46,0x33363B,0,43,1);bx(g,44,2.5,42,grey,0,50,1.5);
+    for(const s of[-1,1]){bx(g,3,18,4,c,s*24.5,50,-4);bx(g,6,3,24,0x2A2C30,s*24.5,68,-2)}
+    bx(g,6,24,4,c,0,44,-23);
+    const back=new THREE.Group();back.position.set(0,64,-24);back.rotation.x=-.14;g.add(back);
+    bx(back,46,4,4,c,0,0,0);bx(back,46,4,4,c,0,50,0);bx(back,4,54,4,c,-21,0,0);bx(back,4,54,4,c,21,0,0);
+    bx(back,38,46,1,0x3A3D43,0,4,0);bx(back,30,7,2.5,grey,0,10,1);
+    return g;
+  }
+  if(/escritorio|micke/.test(n)){
+    const dh=it.h||75,c=C3.white,uw=Math.min(36,lw/3);
+    bx(g,lw,3,ld,c,0,dh-3,0);
+    bx(g,2.5,dh-3,ld,c,-lw/2+1.25,0,0);
+    bx(g,uw,dh-3,ld-2,c,lw/2-uw/2,0,-1);
+    bx(g,uw-4,.6,.6,0x9a958e,lw/2-uw/2,dh-20,ld/2-1.6);bx(g,uw-4,.6,.6,0x9a958e,lw/2-uw/2,dh-42,ld/2-1.6);
+    bx(g,lw-uw-2.5,35,1.5,c,-uw/2+1.25,dh-38,-ld/2+.75);
+    return g;
+  }
+  if(/småstad|smastad|cambiador/.test(n)&&!/cómoda/.test(n)){
+    const c=C3.white,top=85;
+    bx(g,2.5,top,ld,c,-lw/2+1.25,0,0);bx(g,2.5,top,ld,c,lw/2-1.25,0,0);
+    bx(g,lw-5,2,ld-2,c,0,8,0);bx(g,lw-5,2,ld-2,c,0,42,0);bx(g,lw,3,ld,c,0,top-3,0);
+    bx(g,lw-5,8,1.5,c,0,0,ld/2-1);bx(g,lw-5,top-3,1.5,c,0,0,-ld/2+.75);
+    bx(g,lw,15,2,c,0,top,-ld/2+1);bx(g,2,15,ld,c,-lw/2+1,top,0);bx(g,2,15,ld,c,lw/2-1,top,0);
+    bx(g,lw-8,5,ld-8,0xD7E6E0,0,top,1);
+    return g;
+  }
+  if(/cómoda|baúl/.test(n)){
+    const baul=/baúl/.test(n),c=baul?col:C3.white,ch=h,k=baul?1:Math.max(2,Math.round(ch/25));
+    bx(g,lw,ch,ld,c,0,0,0);
+    for(let i=1;i<k;i++)bx(g,lw-4,.6,.6,0x9a958e,0,i*ch/k,ld/2+.3);
+    if(/cambiador/.test(n)){bx(g,lw,10,2,c,0,ch,-ld/2+1);bx(g,lw-6,4,ld-8,0xD7E6E0,0,ch,1)}
+    return g;
+  }
+  if(/sofá cama/.test(n)){
+    if(/abierto/.test(n)){bx(g,lw,22,ld,0x8C8A88,0,0,0);bx(g,lw-4,16,ld-4,0xEDE7DE,0,22,0)}
+    else{bx(g,lw,42,ld,0x8C8A88,0,0,0);bx(g,lw,(it.h||75)-42,20,0x7E7C7A,0,42,-ld/2+10)}
+    return g;
+  }
+  if(/cama/.test(n)){
+    bx(g,lw,25,ld,C3.white,0,0,0);bx(g,lw-4,20,ld-4,0xFBFAF7,0,25,0);
+    if(lw>=ld){bx(g,lw*.62,4,ld-8,col,lw*.17,45,0);bx(g,24,10,ld-24,0xFFFFFF,-lw/2+16,45,0)}
+    else{bx(g,lw-8,4,ld*.62,col,0,45,ld*.17);bx(g,lw-24,10,24,0xFFFFFF,0,45,-ld/2+16)}
+    return g;
+  }
+  if(/piscina/.test(n)){
+    const ph=it.h||30,t=10,c=C3.foam;
+    bx(g,lw,ph,t,c,0,0,-ld/2+t/2);bx(g,lw,ph,t,c,0,0,ld/2-t/2);bx(g,t,ph,ld-2*t,c,-lw/2+t/2,0,0);bx(g,t,ph,ld-2*t,c,lw/2-t/2,0,0);
+    bx(g,lw-2*t,5,ld-2*t,0xD9D3CA,0,0,0);
+    const cs=[0xF4C9D6,0xCFE0F2,0xFFFFFF,0xEBD9B4,0xCFE3CF];
+    T3.ballGeo=T3.ballGeo||new THREE.SphereGeometry(3.6,10,8);
+    let sd=7;const rnd=()=>{sd=(sd*9301+49297)%233280;return sd/233280};
+    const nb=Math.min(160,Math.round((lw-2*t)*(ld-2*t)/30));
+    for(let i=0;i<nb;i++){const m=new THREE.Mesh(T3.ballGeo,mat(cs[i%5]));m.position.set((rnd()-.5)*(lw-2*t-8),9+rnd()*12,(rnd()-.5)*(ld-2*t-8));g.add(m)}
+    return g;
+  }
+  if(/sillón/.test(n)){bx(g,lw,40,ld,col,0,0,0);bx(g,lw,50,16,col,0,40,-ld/2+8);bx(g,12,22,ld-16,col,-lw/2+6,40,8);bx(g,12,22,ld-16,col,lw/2-6,40,8);return g}
+  if(/parque/.test(n)){
+    const ph=it.h||70;[[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>bx(g,4,ph,4,C3.white,a*(lw/2-2),0,b*(ld/2-2)));
+    bx(g,lw-4,3,ld-4,col,0,0,0);
+    bx(g,lw-8,ph-6,.6,0xffffff,0,3,-ld/2+2,.35);bx(g,lw-8,ph-6,.6,0xffffff,0,3,ld/2-2,.35);bx(g,.6,ph-6,ld-8,0xffffff,-lw/2+2,3,0,.35);bx(g,.6,ph-6,ld-8,0xffffff,lw/2-2,3,0,.35);
+    return g;
+  }
+  if(/ventilador/.test(n)){cyl(g,lw*.3,lw*.35,3,0x555555,0,0,0);cyl(g,1.5,1.5,h-25,0x777777,0,3,0,8);const m=cyl(g,lw/2,lw/2,8,C3.white,0,h-20-lw/2,0);m.rotation.x=Math.PI/2;return g}
+  if(/lámpara/.test(n)){cyl(g,lw*.35,lw*.35,3,0x444444,0,0,0);cyl(g,1,1,h-30,0x666666,0,3,0,8);cyl(g,lw*.3,lw/2,28,0xF1E8D8,0,h-28,0);return g}
+  bx(g,lw,h,ld,col,0,0,0);
+  return g;
+}
+function build3d(){
+  if(!T3.renderer)return;
+  const R=S.room,W=R.W,L=R.L;
+  if(T3.group){T3.scene.remove(T3.group);T3.group.traverse(o=>{if(o.geometry&&o.geometry!==T3.ballGeo)o.geometry.dispose()})}
+  const g=new THREE.Group();T3.group=g;T3.scene.add(g);
+  T3.walls=buildRoom(g,R);
+  for(const it of cur().items){
+    const f=fp(it),cx=f.x+f.w/2,cz=f.y+f.d/2;
+    const dist={top:f.y,bottom:L-f.y-f.d,left:f.x,right:W-f.x-f.w};
+    let side=Object.keys(dist).reduce((a,b)=>dist[b]<dist[a]?b:a);
+    if(it.kind==='ceiling'||it.kind==='overlay')side=f.w>=f.d?'top':'left';
+    const along=side==='top'||side==='bottom',lw=along?f.w:f.d,ld=along?f.d:f.w;
+    const m=model(it,lw,ld,R);
+    m.rotation.y={top:0,bottom:Math.PI,left:Math.PI/2,right:-Math.PI/2}[side];
+    if(/silla/i.test(it.name)){ // la silla mira al escritorio más cercano
+      const desk=cur().items.filter(i=>/escritorio|micke/i.test(i.name)&&!/silla/i.test(i.name)).map(fp).sort((a,b)=>rdist(a,f)-rdist(b,f))[0];
+      if(desk&&rdist(desk,f)<120){const dx=Math.max(desk.x,Math.min(cx,desk.x+desk.w))-cx,dz=Math.max(desk.y,Math.min(cz,desk.y+desk.d))-cz;if(dx||dz)m.rotation.y=Math.atan2(dx,dz)}
+    }
+    m.position.set(cx,0,cz);g.add(m);
+  }
+  if(!T3.framed){T3.framed=1;isoView()}else cutaway();
+}
+$('#viewSeg').addEventListener('click',e=>{const b=e.target.closest('[data-view]');if(b)setView(b.dataset.view==='3d')});
+$('#rot3d').addEventListener('click',()=>{if(!T3.renderer)return;corner=(corner+1)%4;isoView()});
+
+renderRoomForm();renderAll();
+})();
+</script>
+
+</html>
