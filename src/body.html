@@ -1,0 +1,75 @@
+<header class="top">
+  <div class="brand">
+    <div class="roomline"><h1 id="roomTitle">Cuarto de la bebé</h1><select id="roomSel" aria-label="Cambiar de habitación"></select></div>
+    <span class="sub" id="roomsub">Plano a escala · medidas en cm</span>
+  </div>
+  <div class="layouts" id="layoutsBar">
+    <div id="chips" class="layouts"></div>
+    <button class="ghost" id="newLayout" title="Crea una copia de la distribución actual">+ Copiar distribución</button>
+  </div>
+</header>
+
+<main class="app">
+  <aside class="panel catalog" id="catalogPanel">
+    <div class="sheethead"><h2 id="catTitle">Añadir mueble</h2><button class="btn sheetclose" id="closeSheet" type="button">Cerrar</button></div>
+    <div id="catBody"></div>
+  </aside>
+
+  <section class="stage">
+    <div class="toolbar">
+      <div class="seg" id="viewSeg" role="group" aria-label="Vista"><button data-view="2d" aria-pressed="true">Plano</button><button data-view="3d" aria-pressed="false">3D</button><button data-view="list" aria-pressed="false">Lista de compra</button></div>
+      <div class="seg planonly" id="modeSeg" role="group" aria-label="Qué editar"><button data-mode="items" aria-pressed="true">Muebles</button><button data-mode="room" aria-pressed="false">Habitación</button></div>
+      <span class="spacer"></span>
+      <div class="seg zoomseg planonly" id="zoomSeg" role="group" aria-label="Zoom"><button data-z="out" aria-label="Alejar">−</button><button data-z="fit">Ajustar</button><button data-z="in" aria-label="Acercar">+</button></div>
+      <span class="note snaplbl">Ajuste</span>
+      <div class="seg nolist" id="snap" role="group" aria-label="Ajuste al mover">
+        <button data-v="1">1 cm</button><button data-v="5">5 cm</button><button data-v="10">10 cm</button>
+      </div>
+      <button class="btn nolist" id="undo" title="Deshacer (Ctrl+Z)">Deshacer</button>
+      <span id="status" class="pill ok nolist">Sin conflictos</span>
+    </div>
+    <div class="toolbar nolist">
+      <div class="layoutname"><label for="layoutName" class="note">Distribución</label><input id="layoutName"></div>
+      <button class="btn danger" id="delLayout">Borrar</button>
+    </div>
+    <div class="wrap3d" id="wrap3d" hidden>
+      <div id="canvas3d"></div>
+      <div class="bar3d"><span class="note" id="msg3d"></span><div class="btnrow"><button class="btn" id="walk3d" type="button" aria-pressed="false">Vista a pie</button><button class="btn" id="rot3d" type="button">Girar vista 90°</button></div></div>
+    </div>
+    <div class="planwrap" id="planwrap"><svg id="plan" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Plano de la habitación visto desde arriba"></svg></div>
+    <div class="legend" id="legend">
+      <span><i class="sw" style="background:var(--glass)"></i>Ventana</span>
+      <span><i class="sw" style="background:var(--fixed)"></i>Armario y columna</span>
+      <span><i class="sw" style="background:var(--swing);border:1px dashed var(--accent)"></i>Apertura de puertas</span>
+      <span><i class="sw" style="border:2px solid var(--err)"></i>Choque</span>
+      <span><i class="sw" style="border:2px solid var(--warn)"></i>Aviso</span>
+      <span>Cuadrícula: 10 cm · líneas fuertes cada 50 cm</span>
+    </div>
+    <section class="wish" id="wishView" hidden></section>
+  </section>
+
+  <aside class="panel inspector" id="inspector">
+    <h2 id="selTitle">Seleccionado</h2>
+    <div id="sel"></div>
+    <div id="itemsPanels">
+      <h2>Avisos</h2>
+      <ul class="warns" id="warns"></ul>
+      <h2 style="margin-top:12px">En el plano</h2>
+      <ul class="list" id="items"></ul>
+    </div>
+    <details id="fileDetails">
+      <summary>Guardar, compartir e imprimir</summary>
+      <div class="stack">
+        <p class="note">Tus datos se guardan solo en este navegador. Descarga una copia de vez en cuando.</p>
+        <div class="btnrow"><button class="btn primary" id="exportFile" type="button">Descargar copia</button><label class="btn filebtn">Restaurar copia<input id="importFile" type="file" accept=".json,application/json"></label></div>
+        <div class="btnrow"><button class="btn" id="pngPlan" type="button">Imagen del plano</button><button class="btn" id="png3d" type="button">Imagen 3D</button><button class="btn" id="printPlan" type="button">Imprimir / PDF</button></div>
+        <div class="field"><label for="shareText">Pasar una distribución a otro dispositivo</label><textarea id="shareText" rows="3"></textarea></div>
+        <div class="btnrow"><button class="btn" id="exportLayout" type="button">Copiar la distribución</button><button class="btn" id="importLayout" type="button">Añadir la pegada</button></div>
+        <p class="note" id="fileMsg" aria-live="polite"></p>
+      </div>
+    </details>
+  </aside>
+</main>
+<div class="scrim" id="scrim"></div>
+<nav class="mbar" id="mbar" aria-label="Acciones del plano"></nav>
+<div id="printArea" class="printonly"></div>
