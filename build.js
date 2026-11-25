@@ -47,3 +47,40 @@ fs.writeFileSync(dir('index.html'),page);
 fs.mkdirSync(dir('dist'),{recursive:true});
 fs.writeFileSync(dir('dist/embed.html'),`<title>Planificador de casa</title>\n${shared}${app}`);
 console.log('index.html',(page.length/1024).toFixed(1)+' KB');
+
+// ── Planos (detrás de BAS): bas/public/, con archivos aparte para la CSP y Three.js y fuentes en local
+const basDir=dir('bas/public');
+fs.mkdirSync(basDir,{recursive:true});
+const basJs=`(function(){
+'use strict';
+// ── bas/planos.js (primero: sus constantes deben existir cuando 10-main.js llama a basStart)
+${read('src/bas/planos.js')}
+${js}
+})();
+`;
+const fuentes=['bricolage-grotesque/600','bricolage-grotesque/700','ibm-plex-sans/400','ibm-plex-sans/500','ibm-plex-sans/600','ibm-plex-mono/400','ibm-plex-mono/500']
+  .map(f=>`<link rel="stylesheet" href="vendor/fuentes/${f}.css">`).join('\n');
+const basPage=`<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Planos</title>
+<meta name="theme-color" content="#EDF0F3">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+${fuentes}
+<link rel="stylesheet" href="app.css">
+<script type="importmap">{"imports":{"three":"./vendor/three/build/three.module.js","three/addons/":"./vendor/three/examples/jsm/"}}</script>
+</head>
+<body>
+${read('src/bas/body.html')}
+${body}
+<script src="app.js"></script>
+</body>
+</html>
+`;
+fs.writeFileSync(path.join(basDir,'index.html'),basPage);
+fs.writeFileSync(path.join(basDir,'app.js'),basJs);
+fs.writeFileSync(path.join(basDir,'app.css'),`[hidden]{display:none!important}\n${css}\n${read('src/bas/planos.css')}`);
+fs.copyFileSync(dir('icon.svg'),path.join(basDir,'icon.svg'));
+console.log('bas/public/app.js',(basJs.length/1024).toFixed(1)+' KB');

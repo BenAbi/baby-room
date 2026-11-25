@@ -575,7 +575,8 @@ function load(){
   try{const o=JSON.parse(localStorage.getItem(OLD_STORE));if(o&&o.layouts&&o.layouts.length)return fromV1(o)}catch(e){}
   return null;
 }
-function save(){try{localStorage.setItem(STORE,JSON.stringify(S))}catch(e){}}
+// detrás de BAS (Planos) se guarda en el servidor; en la web de siempre, en este navegador
+function save(){if(typeof basSave==='function'){basSave();return}try{localStorage.setItem(STORE,JSON.stringify(S))}catch(e){}}
 
 let S=null;
 const room=()=>S.rooms.find(r=>r.id===S.roomId)||S.rooms[0];
@@ -1199,6 +1200,7 @@ function onUp(e){
 function onKey(e){
   const tag=(e.target.tagName||'').toLowerCase();
   if(tag==='input'||tag==='select'||tag==='textarea')return;
+  if(e.target.closest&&e.target.closest('dialog'))return;
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();undo();return}
   if(view==='list')return;
   const st=e.shiftKey?10:1,mv={ArrowLeft:[-st,0],ArrowRight:[st,0],ArrowUp:[0,-st],ArrowDown:[0,st]}[e.key];
@@ -1755,8 +1757,8 @@ function setView(v){
   if(v==='list')window.scrollTo({top:0});
 }
 
-function start(){
-  S=load()||seed();save();
+function start(inicial){
+  S=inicial||load()||seed();save();
   $('#plan').addEventListener('pointerdown',onDown);
   $('#plan').addEventListener('pointermove',onMove);
   $('#plan').addEventListener('pointerup',onUp);
@@ -1802,7 +1804,7 @@ function start(){
   // aplicación instalable: solo en la web publicada (con manifiesto)
   if('serviceWorker' in navigator&&document.querySelector('link[rel=manifest]')&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 }
-start();
+if(typeof basStart==='function')basStart(start);else start();
 
 })();
 </script>

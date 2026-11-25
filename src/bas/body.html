@@ -1,0 +1,41 @@
+<div class="pbar" id="pbar">
+  <a class="pbrand" href="../" title="Volver a BAS">BAS</a>
+  <span class="ptitle">Planos</span>
+  <button class="btn pcur" id="pOpen" type="button" aria-haspopup="dialog"><span id="pName">Cargando…</span><span class="pperm" id="pPerm"></span></button>
+  <span class="pill ok" id="pSave" aria-live="polite">Guardado</span>
+  <span class="spacer"></span>
+  <span class="note" id="pUser"></span>
+</div>
+<p class="paviso" id="pAviso" hidden></p>
+
+<dialog class="pdlg" id="pDlg" aria-labelledby="pDlgTitle">
+  <div class="pdlghead"><h2 id="pDlgTitle">Tus planos</h2><button class="btn" id="pClose" type="button">Cerrar</button></div>
+  <p class="note" id="pIntro"></p>
+  <ul class="plist" id="pList"></ul>
+
+  <section class="pbox" id="pShare" hidden>
+    <h3 id="pShareTitle">Compartir</h3>
+    <ul class="plist" id="pShareList"></ul>
+    <form class="prow" id="pShareForm">
+      <div class="field"><label for="pShareUser">Usuario de BAS</label><input id="pShareUser" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="por ejemplo, maria" required></div>
+      <div class="field"><label for="pShareLevel">Permiso</label><select id="pShareLevel"><option value="editar">Puede editar</option><option value="ver">Solo ver</option></select></div>
+      <button class="btn primary" type="submit">Compartir</button>
+    </form>
+    <p class="note" id="pShareMsg" aria-live="polite"></p>
+  </section>
+
+  <section class="pbox">
+    <h3>Nuevo plano</h3>
+    <form class="prow" id="pNewForm">
+      <div class="field"><label for="pNewName">Nombre</label><input id="pNewName" maxlength="80" placeholder="Mi casa" required></div>
+      <div class="field"><label for="pNewKind">Empezar con</label><select id="pNewKind"><option value="vacio">Una habitación vacía</option><option value="ejemplo">El ejemplo del cuarto de la bebé</option></select></div>
+      <button class="btn primary" type="submit">Crear</button>
+    </form>
+    <div class="btnrow">
+      <label class="btn filebtn">Crear desde una copia (.json)<input id="pNewFile" type="file" accept=".json,application/json"></label>
+      <button class="btn" id="pNewLocal" type="button" hidden>Traer lo guardado en este navegador</button>
+    </div>
+    <p class="note">¿Tenías planos en la versión web antigua? Allí pulsa «Descargar copia» y aquí «Crear desde una copia».</p>
+    <p class="note" id="pMsg" aria-live="polite"></p>
+  </section>
+</dialog>

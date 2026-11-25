@@ -1,0 +1,37 @@
+/* Planos (detrás de BAS): barra de proyecto y diálogo de proyectos */
+body{margin:0}
+:root{padding-top:env(safe-area-inset-top,0px)}
+.pbar{display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; max-width:1500px; margin:0 auto 12px; padding-bottom:10px; border-bottom:1px solid var(--line)}
+.pbrand{font-family:var(--mono); font-size:12px; font-weight:500; color:var(--muted); text-decoration:none; border:1px solid var(--line); border-radius:6px; padding:3px 7px}
+.pbrand:hover{color:var(--ink); border-color:var(--muted)}
+.ptitle{font-family:var(--display); font-weight:700; font-size:17px}
+.pcur{display:inline-flex; align-items:center; gap:8px; max-width:min(60vw,420px); font-weight:600}
+.pcur #pName{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.pcur::after{content:"▾"; color:var(--muted); font-size:11px}
+.pperm{font-family:var(--mono); font-size:11px; font-weight:400; color:var(--muted)}
+.pbar .spacer{flex:1}
+.paviso{max-width:1500px; margin:-4px auto 12px; padding:8px 12px; border-radius:8px; background:var(--accent-soft); border:1px solid var(--accent); font-size:13px}
+.paviso.err{background:transparent; border-color:var(--err); color:var(--err)}
+.pdlg{width:min(640px,calc(100vw - 24px)); max-height:calc(100dvh - 32px); border:1px solid var(--line); border-radius:12px; background:var(--panel); color:var(--ink); padding:16px; box-sizing:border-box}
+.pdlg::backdrop{background:rgba(10,14,18,.45)}
+.pdlghead{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px}
+.pdlg h3{font-size:14px; margin:0 0 8px}
+.pbox{border-top:1px solid var(--line); margin-top:14px; padding-top:12px; display:flex; flex-direction:column; gap:8px}
+.plist{list-style:none; margin:8px 0 0; padding:0; display:flex; flex-direction:column; gap:6px}
+.plist li{display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; border:1px solid var(--line); border-radius:8px; padding:8px 10px}
+.plist li.on{border-color:var(--accent); background:var(--accent-soft)}
+.plist .pn{flex:1 1 180px; min-width:0}
+.plist .pn b{display:block; overflow-wrap:anywhere}
+.plist .pn span{font-size:12px; color:var(--muted)}
+.plist .btnrow{gap:4px}
+.plist .btn{padding:4px 9px; font-size:12px}
+.plist input{border:1px solid var(--line); background:var(--bg); border-radius:6px; padding:5px 8px; font:inherit; color:inherit; width:100%}
+.prow{display:flex; flex-wrap:wrap; align-items:flex-end; gap:8px}
+.prow .field{flex:1 1 160px}
+.prow .btn{height:32px}
+@media (max-width:760px){
+  .pbar{gap:6px 8px}
+  .pcur{max-width:calc(100vw - 150px)}
+  #pUser{display:none}
+}
+@media print{ .pbar,.paviso,.pdlg{display:none!important} }

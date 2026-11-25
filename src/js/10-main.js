@@ -11,8 +11,8 @@ function setView(v){
   if(v==='list')window.scrollTo({top:0});
 }
 
-function start(){
-  S=load()||seed();save();
+function start(inicial){
+  S=inicial||load()||seed();save();
   $('#plan').addEventListener('pointerdown',onDown);
   $('#plan').addEventListener('pointermove',onMove);
   $('#plan').addEventListener('pointerup',onUp);
@@ -58,4 +58,4 @@ function start(){
   // aplicación instalable: solo en la web publicada (con manifiesto)
   if('serviceWorker' in navigator&&document.querySelector('link[rel=manifest]')&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 }
-start();
+if(typeof basStart==='function')basStart(start);else start();

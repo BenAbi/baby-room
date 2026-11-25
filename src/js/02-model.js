@@ -89,7 +89,8 @@ function load(){
   try{const o=JSON.parse(localStorage.getItem(OLD_STORE));if(o&&o.layouts&&o.layouts.length)return fromV1(o)}catch(e){}
   return null;
 }
-function save(){try{localStorage.setItem(STORE,JSON.stringify(S))}catch(e){}}
+// detrás de BAS (Planos) se guarda en el servidor; en la web de siempre, en este navegador
+function save(){if(typeof basSave==='function'){basSave();return}try{localStorage.setItem(STORE,JSON.stringify(S))}catch(e){}}
 
 let S=null;
 const room=()=>S.rooms.find(r=>r.id===S.roomId)||S.rooms[0];

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Planos</title>
+<meta name="theme-color" content="#EDF0F3">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="vendor/fuentes/bricolage-grotesque/600.css">
+<link rel="stylesheet" href="vendor/fuentes/bricolage-grotesque/700.css">
+<link rel="stylesheet" href="vendor/fuentes/ibm-plex-sans/400.css">
+<link rel="stylesheet" href="vendor/fuentes/ibm-plex-sans/500.css">
+<link rel="stylesheet" href="vendor/fuentes/ibm-plex-sans/600.css">
+<link rel="stylesheet" href="vendor/fuentes/ibm-plex-mono/400.css">
+<link rel="stylesheet" href="vendor/fuentes/ibm-plex-mono/500.css">
+<link rel="stylesheet" href="app.css">
+<script type="importmap">{"imports":{"three":"./vendor/three/build/three.module.js","three/addons/":"./vendor/three/examples/jsm/"}}</script>
+</head>
+<body>
+<div class="pbar" id="pbar">
+  <a class="pbrand" href="../" title="Volver a BAS">BAS</a>
+  <span class="ptitle">Planos</span>
+  <button class="btn pcur" id="pOpen" type="button" aria-haspopup="dialog"><span id="pName">Cargando…</span><span class="pperm" id="pPerm"></span></button>
+  <span class="pill ok" id="pSave" aria-live="polite">Guardado</span>
+  <span class="spacer"></span>
+  <span class="note" id="pUser"></span>
+</div>
+<p class="paviso" id="pAviso" hidden></p>
+
+<dialog class="pdlg" id="pDlg" aria-labelledby="pDlgTitle">
+  <div class="pdlghead"><h2 id="pDlgTitle">Tus planos</h2><button class="btn" id="pClose" type="button">Cerrar</button></div>
+  <p class="note" id="pIntro"></p>
+  <ul class="plist" id="pList"></ul>
+
+  <section class="pbox" id="pShare" hidden>
+    <h3 id="pShareTitle">Compartir</h3>
+    <ul class="plist" id="pShareList"></ul>
+    <form class="prow" id="pShareForm">
+      <div class="field"><label for="pShareUser">Usuario de BAS</label><input id="pShareUser" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="por ejemplo, maria" required></div>
+      <div class="field"><label for="pShareLevel">Permiso</label><select id="pShareLevel"><option value="editar">Puede editar</option><option value="ver">Solo ver</option></select></div>
+      <button class="btn primary" type="submit">Compartir</button>
+    </form>
+    <p class="note" id="pShareMsg" aria-live="polite"></p>
+  </section>
+
+  <section class="pbox">
+    <h3>Nuevo plano</h3>
+    <form class="prow" id="pNewForm">
+      <div class="field"><label for="pNewName">Nombre</label><input id="pNewName" maxlength="80" placeholder="Mi casa" required></div>
+      <div class="field"><label for="pNewKind">Empezar con</label><select id="pNewKind"><option value="vacio">Una habitación vacía</option><option value="ejemplo">El ejemplo del cuarto de la bebé</option></select></div>
+      <button class="btn primary" type="submit">Crear</button>
+    </form>
+    <div class="btnrow">
+      <label class="btn filebtn">Crear desde una copia (.json)<input id="pNewFile" type="file" accept=".json,application/json"></label>
+      <button class="btn" id="pNewLocal" type="button" hidden>Traer lo guardado en este navegador</button>
+    </div>
+    <p class="note">¿Tenías planos en la versión web antigua? Allí pulsa «Descargar copia» y aquí «Crear desde una copia».</p>
+    <p class="note" id="pMsg" aria-live="polite"></p>
+  </section>
+</dialog>
+
+<header class="top">
+  <div class="brand">
+    <div class="roomline"><h1 id="roomTitle">Cuarto de la bebé</h1><select id="roomSel" aria-label="Cambiar de habitación"></select></div>
+    <span class="sub" id="roomsub">Plano a escala · medidas en cm</span>
+  </div>
+  <div class="layouts" id="layoutsBar">
+    <div id="chips" class="layouts"></div>
+    <button class="ghost" id="newLayout" title="Crea una copia de la distribución actual">+ Copiar distribución</button>
+  </div>
+</header>
+
+<main class="app">
+  <aside class="panel catalog" id="catalogPanel">
+    <div class="sheethead"><h2 id="catTitle">Añadir mueble</h2><button class="btn sheetclose" id="closeSheet" type="button">Cerrar</button></div>
+    <div id="catBody"></div>
+  </aside>
+
+  <section class="stage">
+    <div class="toolbar">
+      <div class="seg" id="viewSeg" role="group" aria-label="Vista"><button data-view="2d" aria-pressed="true">Plano</button><button data-view="3d" aria-pressed="false">3D</button><button data-view="list" aria-pressed="false">Lista de compra</button></div>
+      <div class="seg planonly" id="modeSeg" role="group" aria-label="Qué editar"><button data-mode="items" aria-pressed="true">Muebles</button><button data-mode="room" aria-pressed="false">Habitación</button></div>
+      <span class="spacer"></span>
+      <div class="seg zoomseg planonly" id="zoomSeg" role="group" aria-label="Zoom"><button data-z="out" aria-label="Alejar">−</button><button data-z="fit">Ajustar</button><button data-z="in" aria-label="Acercar">+</button></div>
+      <span class="note snaplbl">Ajuste</span>
+      <div class="seg nolist" id="snap" role="group" aria-label="Ajuste al mover">
+        <button data-v="1">1 cm</button><button data-v="5">5 cm</button><button data-v="10">10 cm</button>
+      </div>
+      <button class="btn nolist" id="undo" title="Deshacer (Ctrl+Z)">Deshacer</button>
+      <span id="status" class="pill ok nolist">Sin conflictos</span>
+    </div>
+    <div class="toolbar nolist">
+      <div class="layoutname"><label for="layoutName" class="note">Distribución</label><input id="layoutName"></div>
+      <button class="btn danger" id="delLayout">Borrar</button>
+    </div>
+    <div class="wrap3d" id="wrap3d" hidden>
+      <div id="canvas3d"></div>
+      <div class="bar3d"><span class="note" id="msg3d"></span><div class="btnrow"><button class="btn" id="walk3d" type="button" aria-pressed="false">Vista a pie</button><button class="btn" id="rot3d" type="button">Girar vista 90°</button></div></div>
+    </div>
+    <div class="planwrap" id="planwrap"><svg id="plan" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Plano de la habitación visto desde arriba"></svg></div>
+    <div class="legend" id="legend">
+      <span><i class="sw" style="background:var(--glass)"></i>Ventana</span>
+      <span><i class="sw" style="background:var(--fixed)"></i>Armario y columna</span>
+      <span><i class="sw" style="background:var(--swing);border:1px dashed var(--accent)"></i>Apertura de puertas</span>
+      <span><i class="sw" style="border:2px solid var(--err)"></i>Choque</span>
+      <span><i class="sw" style="border:2px solid var(--warn)"></i>Aviso</span>
+      <span>Cuadrícula: 10 cm · líneas fuertes cada 50 cm</span>
+    </div>
+    <section class="wish" id="wishView" hidden></section>
+  </section>
+
+  <aside class="panel inspector" id="inspector">
+    <h2 id="selTitle">Seleccionado</h2>
+    <div id="sel"></div>
+    <div id="itemsPanels">
+      <h2>Avisos</h2>
+      <ul class="warns" id="warns"></ul>
+      <h2 style="margin-top:12px">En el plano</h2>
+      <ul class="list" id="items"></ul>
+    </div>
+    <details id="fileDetails">
+      <summary>Guardar, compartir e imprimir</summary>
+      <div class="stack">
+        <p class="note">Tus datos se guardan solo en este navegador. Descarga una copia de vez en cuando.</p>
+        <div class="btnrow"><button class="btn primary" id="exportFile" type="button">Descargar copia</button><label class="btn filebtn">Restaurar copia<input id="importFile" type="file" accept=".json,application/json"></label></div>
+        <div class="btnrow"><button class="btn" id="pngPlan" type="button">Imagen del plano</button><button class="btn" id="png3d" type="button">Imagen 3D</button><button class="btn" id="printPlan" type="button">Imprimir / PDF</button></div>
+        <div class="field"><label for="shareText">Pasar una distribución a otro dispositivo</label><textarea id="shareText" rows="3"></textarea></div>
+        <div class="btnrow"><button class="btn" id="exportLayout" type="button">Copiar la distribución</button><button class="btn" id="importLayout" type="button">Añadir la pegada</button></div>
+        <p class="note" id="fileMsg" aria-live="polite"></p>
+      </div>
+    </details>
+  </aside>
+</main>
+<div class="scrim" id="scrim"></div>
+<nav class="mbar" id="mbar" aria-label="Acciones del plano"></nav>
+<div id="printArea" class="printonly"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

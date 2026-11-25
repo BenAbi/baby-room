@@ -1,3 +1,8 @@
 planificador.html
 dist/
 versiones/v1/planificador.html.bak
+node_modules/
+data/
+.env
+.env.*
+*.key
