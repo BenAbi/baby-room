@@ -78,6 +78,28 @@ test("cada usuario ve y toca solo sus proyectos", async () => {
   assert.equal(r.datos.nombre, "Piso");
 });
 
+test("aislamiento: un usuario nuevo empieza sin nada y dos usuarios nunca ven lo del otro", async () => {
+  const DANI = { sub: 10, usuario: "dani", nombre: "Dani", rol: "usuario", app: "planos" };
+  const EVA = { sub: 11, usuario: "eva", nombre: "Eva", rol: "admin", app: "planos" };
+  // Sin perfil por defecto ni datos comunes: la lista de alguien que entra por primera vez está vacía.
+  assert.deepEqual((await pedir(DANI, "GET", "api/proyectos")).datos, []);
+  assert.deepEqual((await pedir(EVA, "GET", "api/proyectos")).datos, []);
+  const d = (await pedir(DANI, "POST", "api/proyectos", { nombre: "Casa de Dani", datos: DATOS })).datos;
+  const e = (await pedir(EVA, "POST", "api/proyectos", { nombre: "Casa de Eva", datos: DATOS })).datos;
+  assert.deepEqual((await pedir(DANI, "GET", "api/proyectos")).datos.map((p) => p.id), [d.id]);
+  assert.deepEqual((await pedir(EVA, "GET", "api/proyectos")).datos.map((p) => p.id), [e.id]);
+  // Ni siquiera con rol admin de la app se ve lo de otro usuario.
+  for (const [quien, ajeno] of [[DANI, e.id], [EVA, d.id]]) {
+    assert.equal((await pedir(quien, "GET", `api/proyectos/${ajeno}`)).estado, 404);
+    assert.equal((await pedir(quien, "GET", `api/proyectos/${ajeno}?version`)).estado, 404);
+    assert.equal((await pedir(quien, "PUT", `api/proyectos/${ajeno}`, { version: 1, datos: DATOS })).estado, 404);
+  }
+  // Lo que decide es el id de BAS (sub), no el nombre que trae la cabecera.
+  assert.deepEqual((await pedir({ ...DANI, sub: 12, nombre: "Dani" }, "GET", "api/proyectos")).datos, []);
+  await pedir(DANI, "DELETE", `api/proyectos/${d.id}`);
+  await pedir(EVA, "DELETE", `api/proyectos/${e.id}`);
+});
+
 test("escrituras: solo JSON y nunca desde otra web", async () => {
   const r = await fetch(base + "api/proyectos", { method: "POST", headers: { "x-bas-usuario": firmar(ANA), "content-type": "text/plain" }, body: JSON.stringify({ nombre: "x", datos: DATOS }) });
   assert.equal(r.status, 415);

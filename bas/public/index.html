@@ -47,14 +47,11 @@
     <h3>Nuevo plano</h3>
     <form class="prow" id="pNewForm">
       <div class="field"><label for="pNewName">Nombre</label><input id="pNewName" maxlength="80" placeholder="Mi casa" required></div>
-      <div class="field"><label for="pNewKind">Empezar con</label><select id="pNewKind"><option value="vacio">Una habitación vacía</option><option value="ejemplo">El ejemplo del cuarto de la bebé</option></select></div>
       <button class="btn primary" type="submit">Crear</button>
     </form>
     <div class="btnrow">
-      <label class="btn filebtn">Crear desde una copia (.json)<input id="pNewFile" type="file" accept=".json,application/json"></label>
-      <button class="btn" id="pNewLocal" type="button" hidden>Traer lo guardado en este navegador</button>
-    </div>
-    <p class="note">¿Tenías planos en la versión web antigua? Allí pulsa «Descargar copia» y aquí «Crear desde una copia».</p>
+      <label class="btn filebtn">Crear desde una copia (.json)<input id="pNewFile" type="file" accept=".json,application/json"></label>    </div>
+    <p class="note">Empieza con una habitación vacía. ¿Tenías planos en la versión web antigua? Allí pulsa «Descargar copia» y aquí «Crear desde una copia».</p>
     <p class="note" id="pMsg" aria-live="polite"></p>
   </section>
 </dialog>

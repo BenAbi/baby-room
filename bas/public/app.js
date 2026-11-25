@@ -192,7 +192,7 @@ function basStart(start){
   });
   $('#pNewForm').addEventListener('submit',e=>{
     e.preventDefault();
-    crear($('#pNewName').value.trim(),$('#pNewKind').value==='ejemplo'?seed():datosVacios());
+    crear($('#pNewName').value.trim(),datosVacios());
   });
   $('#pNewFile').addEventListener('change',e=>{
     const f=e.target.files[0];e.target.value='';if(!f)return;
@@ -202,11 +202,9 @@ function basStart(start){
       crear(f.name.replace(/\.json$/i,'').slice(0,80)||'Copia restaurada',d)};
     rd.readAsText(f);
   });
-  const local=load();
-  if(local){
-    $('#pNewLocal').hidden=false;
-    $('#pNewLocal').addEventListener('click',()=>crear('Lo que tenía este navegador',local));
-  }
+  // Nada de datos comunes: ni el plano guardado en este navegador (en un dispositivo compartido puede ser de
+  // otra persona) ni el ejemplo de la familia. Cada usuario ve solo sus planos y los que le compartan.
+  $('#roomTitle').textContent='';$('#roomsub').textContent='';
   const nota=$('#fileDetails .note');if(nota)nota.textContent='Se guarda solo en Planos, dentro de BAS. Puedes descargar una copia de vez en cuando.';
   $('#fileDetails summary').textContent='Copias, imágenes e impresión';
 
